@@ -42,6 +42,8 @@ bun run qc contact-sheet fixtures/jobs/valid-full.json --out sheet.png  # 九宫
 bun run qc analyze <素材>                          # 场景切换/静音段/响度分析
 bun run qc patch <job.json> --ops <ops.json>       # JSON Patch 增量改 DSL
 bun run qc transcribe <素材> --lang zh --srt out.srt # whisper.cpp 本地转写（先装：bun script/install-whisper.ts）
+bun run qc template <tpl.json> --vars <vars.json> --out <job.json>  # 模板+变量 → 任务
+bun run qc batch <job1.json> <job2.json>           # 批量渲染，逐任务进度+汇总
 ```
 
 测试素材先跑 `bun run make:fixtures` 生成；单测 `bun run test:headless`。
