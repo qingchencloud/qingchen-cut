@@ -9,3 +9,5 @@ export * from "./analyze";
 export * from "./contact-sheet";
 export * from "./patch-file";
 export * from "./transcribe";
+export * from "./template";
+export * from "./batch";

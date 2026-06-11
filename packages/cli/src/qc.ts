@@ -11,7 +11,9 @@ import {
   patchJobFile,
   planJob,
   probeMedia,
+  renderBatch,
   renderJob,
+  renderTemplate,
   runDoctor,
   transcribeMedia,
   validateJobFile,
@@ -38,6 +40,9 @@ const HELP = `qc <command> [args]
   contact-sheet <media|job.json> --out <png>
                              九宫格缩略图（每格带时间戳），一张图看全片节奏
       --cols <n> --rows <n>  网格尺寸，默认 3x3
+  template <template.json> --vars <vars.json> [--out <job.json>]
+                             实例化 DSL 模板（\${变量} 占位符），校验通过才落盘
+  batch <job.json...>        顺序批量渲染，NDJSON 逐任务进度 + 汇总
   transcribe <media>         whisper.cpp 本地语音转写 → 带时间戳的 segments JSON
       --model <名|路径>      模型，默认 base（更佳中文效果用 large-v3-turbo）
       --lang <代码>          语言（zh/en/...），默认 auto
@@ -159,6 +164,42 @@ async function main(argv: string[]): Promise<number> {
         ...(rows !== undefined ? { rows: Number(rows) } : {}),
       });
       out(result);
+      return result.ok ? 0 : 1;
+    }
+    case "template": {
+      const templatePath = args[0];
+      const varsPath = flagValue(rest, "--vars");
+      if (!templatePath || !varsPath) {
+        out({ ok: false, error: "用法: qc template <template.json> --vars <vars.json> [--out <job.json>]" });
+        return 2;
+      }
+      let vars: unknown;
+      try {
+        vars = JSON.parse(readFileSync(varsPath, "utf8"));
+      } catch (e) {
+        out({ ok: false, error: `vars 文件读取/解析失败: ${(e as Error).message}` });
+        return 2;
+      }
+      if (vars === null || typeof vars !== "object" || Array.isArray(vars)) {
+        out({ ok: false, error: "vars 文件必须是 JSON 对象（变量名 → 值）" });
+        return 2;
+      }
+      const result = renderTemplate(templatePath, vars as Record<string, unknown>, flagValue(rest, "--out"));
+      out(result);
+      return result.ok ? 0 : 1;
+    }
+    case "batch": {
+      if (args.length === 0) {
+        out({ ok: false, error: "用法: qc batch <job.json> [job2.json ...]" });
+        return 2;
+      }
+      const result = await renderBatch(args, {
+        onJobStart: (jobPath, index, total) =>
+          console.log(JSON.stringify({ stage: "job-start", jobPath, index: index + 1, total })),
+        onJobDone: (r) =>
+          console.log(JSON.stringify({ stage: "job-done", jobPath: r.jobPath, ok: r.ok, output: r.output })),
+      });
+      console.log(JSON.stringify({ stage: "batch-done", ...result }, null, 2));
       return result.ok ? 0 : 1;
     }
     case "transcribe": {

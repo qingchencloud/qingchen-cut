@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "project": {
+    "name": "${name}",
+    "canvas": { "width": 1080, "height": 1920 }
+  },
+  "assets": [{ "id": "main", "path": "${videoPath}" }],
+  "tracks": [
+    {
+      "id": "v1",
+      "type": "video",
+      "clips": [{ "assetId": "main", "in": "${in}", "out": "${out}", "fit": "cover" }]
+    },
+    {
+      "id": "t1",
+      "type": "text",
+      "clips": [
+        {
+          "text": "${title}",
+          "start": 0,
+          "duration": 2,
+          "style": { "fontSize": 88, "position": { "x": 0.5, "y": 0.2, "anchor": "center" } }
+        }
+      ]
+    }
+  ],
+  "export": { "output": "${outputPath}" }
+}

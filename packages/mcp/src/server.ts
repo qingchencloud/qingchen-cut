@@ -15,7 +15,9 @@ import {
   patchJobFile,
   planJob,
   probeMedia,
+  renderBatch,
   renderJob,
+  renderTemplate,
   runDoctor,
   transcribeMedia,
   validateJobFile,
@@ -221,6 +223,37 @@ tool(
       ...(language !== undefined ? { language } : {}),
       ...(outSrt !== undefined ? { outSrt } : {}),
     });
+    return jsonResult(result, result.ok);
+  },
+);
+
+tool(
+  "render_template",
+  {
+    description:
+      '实例化 DSL 模板：模板里的 "${变量名}" 占位符 + 变量表 → 具体任务。整值占位符保留变量类型，字符串内嵌做拼接。校验通过且传 outPath 才落盘。批量出片 = 同一模板 + 不同变量表循环调用。',
+    inputSchema: {
+      templatePath: z.string().describe("DSL 模板 JSON 文件路径"),
+      vars: z.record(z.unknown()).describe("变量表（变量名 → 值）"),
+      outPath: z.string().optional().describe("实例化后的 job 输出路径；不传则只校验预览"),
+    },
+  },
+  async ({ templatePath, vars, outPath }) => {
+    const result = renderTemplate(templatePath, vars, outPath);
+    return jsonResult(result, result.ok);
+  },
+);
+
+tool(
+  "render_batch",
+  {
+    description: "顺序批量渲染多个 DSL 任务，单个失败不中断整批；返回逐任务结果与汇总。",
+    inputSchema: {
+      jobPaths: z.array(z.string()).min(1).describe("DSL 任务 JSON 文件路径列表"),
+    },
+  },
+  async ({ jobPaths }) => {
+    const result = await renderBatch(jobPaths);
     return jsonResult(result, result.ok);
   },
 );
