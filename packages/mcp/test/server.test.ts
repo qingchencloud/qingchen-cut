@@ -1,12 +1,16 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { spawn, type ChildProcess } from "node:child_process";
+import { existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import { resolveTool } from "@qingchen/cut-core";
 
 /**
  * 端到端冒烟：以子进程启动 MCP server，走真实 stdio JSON-RPC。
  */
 const repoRoot = join(import.meta.dir, "..", "..", "..");
 const serverPath = join(repoRoot, "packages", "mcp", "src", "server.ts");
+const fixturesDir = join(repoRoot, "fixtures");
+const hasFFmpeg = resolveTool("ffmpeg") !== null && resolveTool("ffprobe") !== null;
 
 let child: ChildProcess;
 let buffer = "";
@@ -55,20 +59,21 @@ beforeAll(async () => {
   });
   expect(init.result.serverInfo.name).toBe("qingchen-cut");
   send({ jsonrpc: "2.0", method: "notifications/initialized" });
-});
+}, 30_000);
 
 afterAll(() => {
   child?.kill();
 });
 
 describe("MCP server 冒烟", () => {
-  test("tools/list 暴露全部 13 个工具", async () => {
+  test("tools/list 暴露全部 15 个工具", async () => {
     const res = await request(2, "tools/list", {});
     const names = res.result.tools.map((t: any) => t.name).sort();
     expect(names).toEqual(
       [
         "analyze_media",
         "contact_sheet",
+        "create_narrated_dsl",
         "doctor",
         "extract_frame",
         "get_dsl_schema",
@@ -78,6 +83,7 @@ describe("MCP server 冒烟", () => {
         "render_batch",
         "render_template",
         "render_video",
+        "synthesize_speech",
         "transcribe_media",
         "validate_dsl",
       ].sort(),
@@ -108,4 +114,17 @@ describe("MCP server 冒烟", () => {
     const parsed = JSON.parse(res.result.content[0].text);
     expect(parsed.issues.some((i: any) => i.code === "DSL_UNKNOWN_ASSET_REF")).toBe(true);
   }, 30_000);
+
+  test.if(hasFFmpeg && process.platform === "win32")("tools/call synthesize_speech 生成 WAV", async () => {
+    const outWav = join(fixturesDir, "out", "mcp-tts.wav");
+    rmSync(outWav, { force: true });
+    const res = await request(6, "tools/call", {
+      name: "synthesize_speech",
+      arguments: { text: "MCP 配音工具测试。", outWav },
+    });
+    const parsed = JSON.parse(res.result.content[0].text);
+    expect(parsed.ok).toBe(true);
+    expect(parsed.durationSec).toBeGreaterThan(0);
+    expect(existsSync(outWav)).toBe(true);
+  }, 120_000);
 });

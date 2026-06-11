@@ -153,6 +153,7 @@ Working on `apps/desktop`? See [`apps/desktop/README.md`](../apps/desktop/README
 ### Reporting Bugs
 
 - Use the bug report template
+- For headless Qingchen Cut workflows (MCP tools, `qc` CLI, DSL validation, rendering, frame extraction, contact sheets, TTS narration, or transcription), use the **AI editing / MCP / CLI failure** template
 - Include steps to reproduce
 - Provide screenshots if applicable
 

@@ -7,18 +7,23 @@ import { getJobJsonSchema } from "@qingchen/cut-dsl";
 import {
   analyzeMedia,
   contactSheet,
+  createNarratedJobFile,
   extractFrame,
   patchJobFile,
   planJob,
   probeMedia,
+  parseNarrationScript,
   renderBatch,
   renderJob,
   renderTemplate,
   runDoctor,
+  synthesizeNarration,
+  synthesizeSpeech,
   transcribeMedia,
   validateJobFile,
 } from "@qingchen/cut-core";
 import { readFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 const HELP = `qc <command> [args]
 
@@ -47,6 +52,17 @@ const HELP = `qc <command> [args]
       --model <名|路径>      模型，默认 base（更佳中文效果用 large-v3-turbo）
       --lang <代码>          语言（zh/en/...），默认 auto
       --srt <路径>           顺带写出 SRT 字幕文件
+  tts --text <文案> --out <wav>
+                             Windows SAPI 本地 TTS：文本 → WAV，返回真实音频时长
+      --text-file <txt>      从文本文件读取文案（与 --text 二选一）
+      --voice <名称>         指定 SAPI 音色；默认优先中文音色
+      --rate <-10..10>       语速，默认 0
+      --volume <0..100>      音量，默认 100
+  narrate --script <txt|json> --video <mp4> --out-dir <dir> --out-job <job.json> --out <mp4>
+                             文案分段 TTS → WAV/SRT → 音画同步 DSL（渲染再用 qc render）
+      --bgm <audio>          可选 BGM
+      --title <文案>         可选标题；JSON script.title 也可提供
+      --base-name <name>     产物基础文件名，默认 narration
   patch <job.json> --ops <ops.json>
                              JSON Patch 增量修改 DSL（add/remove/replace/test），校验通过才落盘
       --dry-run              只预览结果不写文件
@@ -218,6 +234,70 @@ async function main(argv: string[]): Promise<number> {
       });
       out(result);
       return result.ok ? 0 : 1;
+    }
+    case "tts": {
+      const textFile = flagValue(rest, "--text-file");
+      const text = flagValue(rest, "--text") ?? (textFile ? readFileSync(textFile, "utf8") : undefined);
+      const outWav = flagValue(rest, "--out");
+      if (!text || !outWav) {
+        out({ ok: false, error: "用法: qc tts --text <文案> --out <wav> 或 qc tts --text-file <txt> --out <wav>" });
+        return 2;
+      }
+      const rate = flagValue(rest, "--rate");
+      const volume = flagValue(rest, "--volume");
+      const result = await synthesizeSpeech({
+        text,
+        outWav,
+        ...(flagValue(rest, "--voice") ? { voice: flagValue(rest, "--voice") } : {}),
+        ...(rate !== undefined ? { rate: Number(rate) } : {}),
+        ...(volume !== undefined ? { volume: Number(volume) } : {}),
+      });
+      out(result);
+      return result.ok ? 0 : 1;
+    }
+    case "narrate": {
+      const scriptPath = flagValue(rest, "--script");
+      const videoPath = flagValue(rest, "--video");
+      const outJob = flagValue(rest, "--out-job");
+      const outputPath = flagValue(rest, "--out");
+      if (!scriptPath || !videoPath || !outJob || !outputPath) {
+        out({
+          ok: false,
+          error:
+            "用法: qc narrate --script <txt|json> --video <mp4> --out-dir <dir> --out-job <job.json> --out <mp4> [--bgm <audio>] [--title <文案>]",
+        });
+        return 2;
+      }
+      const parsed = parseNarrationScript(readFileSync(scriptPath, "utf8"));
+      if (!parsed.ok || !parsed.segments) {
+        out(parsed);
+        return 1;
+      }
+      const rate = flagValue(rest, "--rate");
+      const volume = flagValue(rest, "--volume");
+      const outDir = flagValue(rest, "--out-dir") ?? dirname(outJob);
+      const narration = await synthesizeNarration({
+        segments: parsed.segments,
+        outDir,
+        baseName: flagValue(rest, "--base-name") ?? "narration",
+        ...(flagValue(rest, "--voice") ? { voice: flagValue(rest, "--voice") } : {}),
+        ...(rate !== undefined ? { rate: Number(rate) } : {}),
+        ...(volume !== undefined ? { volume: Number(volume) } : {}),
+      });
+      if (!narration.ok) {
+        out({ ok: false, narration, issues: narration.issues });
+        return 1;
+      }
+      const job = await createNarratedJobFile({
+        narration,
+        videoPath,
+        ...(flagValue(rest, "--bgm") ? { bgmPath: flagValue(rest, "--bgm") } : {}),
+        jobPath: outJob,
+        outputPath,
+        title: flagValue(rest, "--title") ?? parsed.title,
+      });
+      out({ ok: job.ok, title: flagValue(rest, "--title") ?? parsed.title, narration, job, issues: job.issues });
+      return job.ok ? 0 : 1;
     }
     case "patch": {
       const jobPath = args[0];

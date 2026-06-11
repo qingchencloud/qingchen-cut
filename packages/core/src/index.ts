@@ -11,3 +11,4 @@ export * from "./patch-file";
 export * from "./transcribe";
 export * from "./template";
 export * from "./batch";
+export * from "./tts";

@@ -9,7 +9,7 @@
 - 人工 UI 只作为调试、预览、复核和紧急修正入口，不作为主工作流依赖。
 - 主执行链路不依赖人工打开浏览器，也不依赖 Playwright 驱动 Web UI。
 - 优先支持本地素材、本地渲染、本地导出，避免把原始视频上传到第三方服务。
-- 第一阶段聚焦确定性剪辑：裁切、拼接、字幕、标题、音量、变速、画布比例和 MP4 导出。
+- 第一阶段聚焦确定性剪辑：裁切、拼接、字幕、标题、配音、配乐、音量、变速、画布比例和 MP4 导出。
 - 保留 OpenCut 的 Web 编辑器能力作为预览/调试界面，但 AI 主路径必须走可编程接口。
 
 ## 初始技术路线
@@ -42,15 +42,58 @@ bun run qc contact-sheet fixtures/jobs/valid-full.json --out sheet.png  # 九宫
 bun run qc analyze <素材>                          # 场景切换/静音段/响度分析
 bun run qc patch <job.json> --ops <ops.json>       # JSON Patch 增量改 DSL
 bun run qc transcribe <素材> --lang zh --srt out.srt # whisper.cpp 本地转写（先装：bun script/install-whisper.ts）
+bun run qc tts --text "晴辰剪辑自动配音" --out voice.wav # Windows SAPI 本地 TTS
+bun run qc narrate --script script.txt --video input.mp4 --bgm bgm.mp3 --out-dir out/narration --out-job job.json --out out.mp4
+                                                     # 文案分段配音 → WAV/SRT → 音画同步 DSL
 bun run qc template <tpl.json> --vars <vars.json> --out <job.json>  # 模板+变量 → 任务
 bun run qc batch <job1.json> <job2.json>           # 批量渲染，逐任务进度+汇总
 ```
 
 测试素材先跑 `bun run make:fixtures` 生成；单测 `bun run test:headless`。
 
-MCP：仓库根目录 [.mcp.json](.mcp.json) 已配置 `qingchen-cut` server（10 个工具，覆盖
-schema/校验/探测/分析/渲染/抽帧/缩略图/增量修改）。用 Claude Code 等 MCP 客户端打开
+MCP：仓库根目录 [.mcp.json](.mcp.json) 已配置 `qingchen-cut` server（15 个工具，覆盖
+schema/校验/探测/分析/渲染/抽帧/缩略图/增量修改/转写/配音/文案同步 DSL）。用 Claude Code 等 MCP 客户端打开
 本仓库即可让 AI 直接调用剪辑引擎。
+
+## 免环境客户端方向
+
+当前仓库优先把 AI 可调用的 headless 能力做稳；下一阶段会把它包装成普通用户可下载的客户端。目标是用户不需要理解 Bun、FFmpeg、whisper、MCP 或环境变量：
+
+- 客户端内置 `qc` headless engine、MCP server、FFmpeg/FFprobe、可选 whisper.cpp 与默认模型。
+- 首次启动自动跑环境诊断，并在缺少模型或权限时给出一键修复。
+- 用户可以选择“自然语言需求 + 本地素材”，客户端调用同一套 DSL/CLI/MCP 能力完成剪辑。
+- 高级用户仍可导出 DSL、查看日志、抽帧、contact sheet，并把失败报告直接附到 GitHub Issue。
+
+短期实现会优先复用现有 `packages/core` / `packages/cli` / `packages/mcp`，客户端只做打包、素材选择、任务管理、预览和诊断，不把剪辑业务逻辑重新写进 UI。
+
+## 给 AI 使用
+
+如果你想让任意 AI 直接操作晴辰剪辑，把 [docs/qingchen-cut-ai-skill.md](docs/qingchen-cut-ai-skill.md) 的全文发给它即可。这个文档说明了：
+
+- AI 应优先调用哪些 MCP 工具。
+- 没有 MCP 时如何用 `bun run qc ...` CLI 兜底。
+- 如何完成素材分析、DSL 生成、校验、抽帧自检、渲染和 contact sheet 速览。
+- 如何做文案配音：`synthesize_speech` / `create_narrated_dsl` 或 `qc tts` / `qc narrate`。
+- 出问题时需要收集哪些诊断信息。
+
+推荐给 AI 的最短指令：
+
+```text
+请阅读并遵守这个 Qingchen Cut AI Skill，然后用本地 MCP/CLI 完成我的视频剪辑任务：
+<粘贴 docs/qingchen-cut-ai-skill.md 全文>
+```
+
+## 问题反馈
+
+如果 AI 剪辑、MCP、CLI、渲染、抽帧、TTS 配音或转写失败，请在 GitHub Issues 里选择 **AI editing / MCP / CLI failure** 模板。提交前尽量附上：
+
+- `bun run qc doctor` 或 MCP `doctor` 输出。
+- 失败的命令或 MCP tool call。
+- 最小可复现 DSL JSON。
+- `issues[]` JSON、抽帧图、contact sheet 或短成片。
+- 系统平台、shell、Bun 版本和当前 commit。
+
+不要公开提交 token、Cookie、私有原片或个人隐私数据；安全问题请按 [.github/SECURITY.md](.github/SECURITY.md) 处理。
 
 ## 开发环境
 

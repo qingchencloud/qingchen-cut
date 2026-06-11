@@ -6,8 +6,10 @@
 - ✅ **P1 大部分达成**：音量、变速、fade 转场、画布比例（contain/cover/stretch）、DSL 回放（golden 测试）、结构化错误（code/stage/path/suggestion）。封面截图由 `qc frame` 覆盖。
 - ✅ **P2 部分达成**：MCP server（10 工具）、`qc analyze`（场景/静音/响度）、`qc contact-sheet`、`qc patch` 增量修改、渲染 NDJSON 进度。
 - ✅ whisper.cpp 本地转写：`qc transcribe`（segments 时间戳 + SRT 输出，中文简体提示词），模型/二进制 `script/install-whisper.ts` 安装到 vendor/（不入库）。按文稿剪辑 = 转写 segments → AI 决定保留区间 → 写回 video 轨 in/out，引擎侧已具备全部原语。
-- ✅ 模板化与批量：`qc template`（`${var}` 占位符，整值保类型）、`qc batch`（顺序渲染，单失败不中断）；MCP 共 13 工具。
-- ⏳ 进行中：端到端 MCP 实战验收（真实素材跑"分析→DSL→自检→出片"）、`@qingchen/*` npm 包发布。
+- ✅ 模板化与批量：`qc template`（`${var}` 占位符，整值保类型）、`qc batch`（顺序渲染，单失败不中断）。
+- ✅ 本地 TTS 配音与音画同步：`qc tts`（Windows SAPI 文本→WAV+真实时长）、`qc narrate`（文案分段→配音 WAV/SRT→同步 DSL）；MCP 共 15 工具，新增 `synthesize_speech` 与 `create_narrated_dsl`。
+- ⏳ 进行中：端到端 MCP 实战验收持续扩展、`@qingchen/*` npm 包发布。
+- ▶ 下一阶段：免环境桌面客户端。目标是把 headless engine、CLI/MCP、FFmpeg/FFprobe、whisper.cpp/TTS 依赖与诊断修复打包进客户端，让普通用户下载即用；UI 只负责素材选择、任务管理、预览、日志和错误上报，剪辑逻辑继续沉淀在 DSL/Core/CLI/MCP。
 
 ## 目标
 

@@ -7,18 +7,23 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { readFileSync } from "node:fs";
 import { getJobJsonSchema } from "@qingchen/cut-dsl";
 import {
   analyzeMedia,
   contactSheet,
+  createNarratedJobFile,
   extractFrame,
   patchJobFile,
   planJob,
   probeMedia,
+  parseNarrationScript,
   renderBatch,
   renderJob,
   renderTemplate,
   runDoctor,
+  synthesizeNarration,
+  synthesizeSpeech,
   transcribeMedia,
   validateJobFile,
 } from "@qingchen/cut-core";
@@ -224,6 +229,78 @@ tool(
       ...(outSrt !== undefined ? { outSrt } : {}),
     });
     return jsonResult(result, result.ok);
+  },
+);
+
+tool(
+  "synthesize_speech",
+  {
+    description:
+      "Windows SAPI 本地 TTS：把一段文本合成为 WAV，并返回真实音频时长、音色和结构化 issues。用于配音素材生成；生成后可作为 DSL audio asset 使用。",
+    inputSchema: {
+      text: z.string().min(1).describe("要合成的配音文本"),
+      outWav: z.string().describe("输出 WAV 路径"),
+      voice: z.string().optional().describe("可选 SAPI 音色名称；不传则优先选择中文音色"),
+      rate: z.number().int().min(-10).max(10).optional().describe("语速 -10..10，默认 0"),
+      volume: z.number().int().min(0).max(100).optional().describe("音量 0..100，默认 100"),
+    },
+  },
+  async ({ text, outWav, voice, rate, volume }) => {
+    const result = await synthesizeSpeech({
+      text,
+      outWav,
+      ...(voice !== undefined ? { voice } : {}),
+      ...(rate !== undefined ? { rate } : {}),
+      ...(volume !== undefined ? { volume } : {}),
+    });
+    return jsonResult(result, result.ok);
+  },
+);
+
+tool(
+  "create_narrated_dsl",
+  {
+    description:
+      "文案分段配音闭环：读取 scriptText 或 scriptPath → 每段 TTS 生成 WAV → 按真实音频时长生成 SRT 和音画同步 DSL。之后调用 validate_dsl/extract_frame/render_video/contact_sheet 完成验收。",
+    inputSchema: {
+      scriptText: z.string().optional().describe("文案内容；支持纯文本分段、JSON 字符串数组、或 {title,segments} 对象"),
+      scriptPath: z.string().optional().describe("文案文件路径；与 scriptText 二选一"),
+      videoPath: z.string().describe("画面素材视频路径"),
+      bgmPath: z.string().optional().describe("可选 BGM 音频路径"),
+      outDir: z.string().describe("配音 WAV 与 SRT 输出目录"),
+      jobPath: z.string().describe("生成 DSL job.json 路径"),
+      outputPath: z.string().describe("DSL export.output 成片路径"),
+      title: z.string().optional().describe("可选标题；不传时使用 JSON script.title"),
+      baseName: z.string().optional().describe("配音/SRT 文件基础名，默认 narration"),
+      voice: z.string().optional().describe("可选 SAPI 音色名称"),
+      rate: z.number().int().min(-10).max(10).optional().describe("语速 -10..10，默认 0"),
+      volume: z.number().int().min(0).max(100).optional().describe("音量 0..100，默认 100"),
+    },
+  },
+  async ({ scriptText, scriptPath, videoPath, bgmPath, outDir, jobPath, outputPath, title, baseName, voice, rate, volume }) => {
+    const source = scriptText ?? (scriptPath ? readFileSync(scriptPath, "utf8") : "");
+    const parsed = parseNarrationScript(source);
+    if (!parsed.ok || !parsed.segments) return jsonResult(parsed, false);
+
+    const narration = await synthesizeNarration({
+      segments: parsed.segments,
+      outDir,
+      ...(baseName !== undefined ? { baseName } : {}),
+      ...(voice !== undefined ? { voice } : {}),
+      ...(rate !== undefined ? { rate } : {}),
+      ...(volume !== undefined ? { volume } : {}),
+    });
+    if (!narration.ok) return jsonResult({ ok: false, narration, issues: narration.issues }, false);
+
+    const job = await createNarratedJobFile({
+      narration,
+      videoPath,
+      ...(bgmPath !== undefined ? { bgmPath } : {}),
+      jobPath,
+      outputPath,
+      title: title ?? parsed.title,
+    });
+    return jsonResult({ ok: job.ok, title: title ?? parsed.title, narration, job, issues: job.issues }, job.ok);
   },
 );
 

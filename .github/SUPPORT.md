@@ -10,6 +10,7 @@ Thanks for using OpenCut! If you need help, here are your options:
 ## Issues
 
 - **Bug reports**: Use the bug report template
+- **AI editing / MCP / CLI failures**: Use the "AI editing / MCP / CLI failure" template. Include `qc doctor`, the command or MCP tool call, `issues[]`, the DSL job, and visual evidence such as extracted frames or a contact sheet when relevant.
 - **Feature requests**: Use the feature request template
 - **Questions**: Use GitHub Discussions for general questions
 

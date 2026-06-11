@@ -1,0 +1,119 @@
+name: AI editing / MCP / CLI failure
+description: Report a Qingchen Cut headless editing, MCP, CLI, render, TTS, or transcription failure
+title: "[AI Editing] "
+labels: ["bug", "ai-editing"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template for Qingchen Cut headless workflows: MCP tools, `qc` CLI, DSL validation, rendering, frame extraction, contact sheets, TTS narration, or transcription.
+
+        Do not paste secrets, tokens, cookies, private raw footage, or personal data. Redact local paths if needed.
+
+  - type: input
+    id: commit
+    attributes:
+      label: Qingchen Cut commit
+      description: Run `git rev-parse --short HEAD`.
+      placeholder: e.g. abc1234
+    validations:
+      required: true
+
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and shell
+      description: Include OS version and shell.
+      placeholder: e.g. Windows 11 24H2, PowerShell 7
+    validations:
+      required: true
+
+  - type: dropdown
+    id: interface
+    attributes:
+      label: Interface used
+      options:
+        - MCP tool
+        - qc CLI
+        - Both MCP and CLI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: task
+    attributes:
+      label: Editing task
+      description: What were you trying to make?
+      placeholder: e.g. Create a 1080x1920 narrated video with local video, title, subtitles, BGM, and TTS voiceover.
+    validations:
+      required: true
+
+  - type: textarea
+    id: command-or-tool
+    attributes:
+      label: Command or MCP tool call
+      description: Paste the exact `qc` command or MCP tool name and arguments. Redact private paths if needed.
+      render: shell
+    validations:
+      required: true
+
+  - type: textarea
+    id: doctor
+    attributes:
+      label: Doctor output
+      description: Paste `bun run qc doctor` output or MCP `doctor` output.
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: media
+    attributes:
+      label: Media metadata
+      description: Paste `qc probe <media>` or MCP `probe_media` output for relevant inputs.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: dsl
+    attributes:
+      label: DSL job JSON
+      description: Paste the smallest DSL job that reproduces the issue. Redact private file names if needed.
+      render: json
+    validations:
+      required: false
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Error output / issues
+      description: Paste the full JSON output, especially `issues[]`.
+      render: json
+    validations:
+      required: true
+
+  - type: textarea
+    id: visual-evidence
+    attributes:
+      label: Visual evidence
+      description: Attach extracted frames, contact sheet, or a short rendered clip if the issue is visual or timing-related.
+    validations:
+      required: false
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional context
+      description: Mention whether you gave the AI `docs/qingchen-cut-ai-skill.md`, and include any workaround you found.
+    validations:
+      required: false
