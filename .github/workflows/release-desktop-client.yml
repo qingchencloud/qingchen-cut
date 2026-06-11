@@ -116,8 +116,10 @@ jobs:
 
           - Download `${env:QC_RELEASE_SETUP_NAME}` for the standard installer.
           - Advanced users can download `${env:QC_RELEASE_PORTABLE_NAME}` for a portable unzip-and-run package.
-          - The app starts a local server and opens the native Web editor at `/projects`.
+          - The app starts a local server and opens the native Web editor at `/projects` in an independent Windows app window.
+          - Current Windows builds use Microsoft Edge app window mode; if Edge is missing, the launcher falls back to the default browser.
           - Includes the internal Bun runtime, FFmpeg/FFprobe, and the bundled whisper.cpp base model when the build step succeeds.
+          - AI automation should use the repository MCP/CLI workflow. See `docs/ai-agent-quickstart.md` and `docs/qingchen-cut-ai-skill.md`.
 
           The `.sha256` files can be used to verify downloads.
           "@

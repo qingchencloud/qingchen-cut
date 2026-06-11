@@ -5,16 +5,16 @@ import { dirname, join, resolve } from "node:path";
 import { startStudioServer } from "./studio";
 
 export interface DesktopRuntimePaths {
-  appDir: string;
-  binDir: string;
-  modelDir: string;
-  defaultOutDir: string;
+	appDir: string;
+	binDir: string;
+	modelDir: string;
+	defaultOutDir: string;
 }
 
 export interface BundledRuntimeResult {
-  ffmpeg?: string;
-  whisper?: string;
-  whisperModel?: string;
+	ffmpeg?: string;
+	whisper?: string;
+	whisperModel?: string;
 }
 
 export interface DesktopClientOptions {
@@ -35,38 +35,45 @@ export interface PackagedWebRuntime {
 	webDir: string;
 }
 
-export function resolveDesktopRuntimePaths(
-  executablePath = process.execPath,
-  userHome = homedir(),
-): DesktopRuntimePaths {
-  const appDir = dirname(resolve(executablePath));
-  return {
-    appDir,
-    binDir: join(appDir, "bin"),
-    modelDir: join(appDir, "models"),
-    defaultOutDir: join(userHome, "Videos", "Qingchen Cut"),
-  };
+export interface DesktopWindowLaunch {
+	command: string;
+	args: string[];
 }
 
-export function configureBundledRuntime(paths: DesktopRuntimePaths): BundledRuntimeResult {
-  const ffmpegExe = join(paths.binDir, "ffmpeg.exe");
-  const ffprobeExe = join(paths.binDir, "ffprobe.exe");
-  const whisperExe = join(paths.binDir, "whisper-cli.exe");
-  const baseModel = join(paths.modelDir, "ggml-base.bin");
-  const configured: BundledRuntimeResult = {};
+export function resolveDesktopRuntimePaths(
+	executablePath = process.execPath,
+	userHome = homedir(),
+): DesktopRuntimePaths {
+	const appDir = dirname(resolve(executablePath));
+	return {
+		appDir,
+		binDir: join(appDir, "bin"),
+		modelDir: join(appDir, "models"),
+		defaultOutDir: join(userHome, "Videos", "Qingchen Cut"),
+	};
+}
 
-  if (existsSync(ffmpegExe) && existsSync(ffprobeExe)) {
-    process.env["QC_FFMPEG_PATH"] = paths.binDir;
-    configured.ffmpeg = paths.binDir;
-  }
-  if (existsSync(whisperExe)) {
-    process.env["QC_WHISPER_PATH"] = whisperExe;
-    configured.whisper = whisperExe;
-  }
-  if (existsSync(baseModel)) {
-    process.env["QC_WHISPER_MODEL"] = baseModel;
-    configured.whisperModel = baseModel;
-  }
+export function configureBundledRuntime(
+	paths: DesktopRuntimePaths,
+): BundledRuntimeResult {
+	const ffmpegExe = join(paths.binDir, "ffmpeg.exe");
+	const ffprobeExe = join(paths.binDir, "ffprobe.exe");
+	const whisperExe = join(paths.binDir, "whisper-cli.exe");
+	const baseModel = join(paths.modelDir, "ggml-base.bin");
+	const configured: BundledRuntimeResult = {};
+
+	if (existsSync(ffmpegExe) && existsSync(ffprobeExe)) {
+		process.env["QC_FFMPEG_PATH"] = paths.binDir;
+		configured.ffmpeg = paths.binDir;
+	}
+	if (existsSync(whisperExe)) {
+		process.env["QC_WHISPER_PATH"] = whisperExe;
+		configured.whisper = whisperExe;
+	}
+	if (existsSync(baseModel)) {
+		process.env["QC_WHISPER_MODEL"] = baseModel;
+		configured.whisperModel = baseModel;
+	}
 	return configured;
 }
 
@@ -112,31 +119,112 @@ export function createPackagedWebEnv(
 }
 
 function openUrl(url: string): void {
-  const child =
-    process.platform === "win32"
-      ? spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore", windowsHide: true })
-      : process.platform === "darwin"
-        ? spawn("open", [url], { detached: true, stdio: "ignore" })
-        : spawn("xdg-open", [url], { detached: true, stdio: "ignore" });
-  child.unref();
+	const child =
+		process.platform === "win32"
+			? spawn("cmd", ["/c", "start", "", url], {
+					detached: true,
+					stdio: "ignore",
+					windowsHide: true,
+				})
+			: process.platform === "darwin"
+				? spawn("open", [url], { detached: true, stdio: "ignore" })
+				: spawn("xdg-open", [url], { detached: true, stdio: "ignore" });
+	child.unref();
+}
+
+function windowsEdgeCandidates(): string[] {
+	const programFilesX86 = process.env["ProgramFiles(x86)"];
+	return [
+		process.env["QC_EDGE_PATH"] ?? "",
+		programFilesX86
+			? join(programFilesX86, "Microsoft", "Edge", "Application", "msedge.exe")
+			: "",
+		process.env["ProgramFiles"]
+			? join(
+					process.env["ProgramFiles"],
+					"Microsoft",
+					"Edge",
+					"Application",
+					"msedge.exe",
+				)
+			: "",
+		process.env["LOCALAPPDATA"]
+			? join(
+					process.env["LOCALAPPDATA"],
+					"Microsoft",
+					"Edge",
+					"Application",
+					"msedge.exe",
+				)
+			: "",
+	].filter(Boolean);
+}
+
+export function createDesktopWindowLaunch({
+	url,
+	paths,
+	platform = process.platform,
+	edgeCandidates = windowsEdgeCandidates(),
+	userDataDir,
+}: {
+	url: string;
+	paths: DesktopRuntimePaths;
+	platform?: NodeJS.Platform;
+	edgeCandidates?: string[];
+	userDataDir?: string;
+}): DesktopWindowLaunch {
+	if (platform === "win32") {
+		const edgeExe = edgeCandidates.find((candidate) => existsSync(candidate));
+		if (edgeExe) {
+			const edgeUserDataDir =
+				userDataDir ??
+				join(
+					process.env["LOCALAPPDATA"] ?? paths.defaultOutDir,
+					"Qingchen Cut",
+					"EdgeApp",
+				);
+			return {
+				command: edgeExe,
+				args: [
+					`--app=${url}`,
+					"--no-first-run",
+					"--disable-features=msEdgeBrowserSignin",
+					`--user-data-dir=${edgeUserDataDir}`,
+				],
+			};
+		}
+		return { command: "cmd", args: ["/c", "start", "", url] };
+	}
+	if (platform === "darwin") return { command: "open", args: [url] };
+	return { command: "xdg-open", args: [url] };
+}
+
+function openDesktopWindow(url: string, paths: DesktopRuntimePaths): void {
+	const launch = createDesktopWindowLaunch({ url, paths });
+	const child = spawn(launch.command, launch.args, {
+		detached: true,
+		stdio: "ignore",
+		windowsHide: true,
+	});
+	child.unref();
 }
 
 export function startDesktopClient(opts: DesktopClientOptions = {}): {
-  url: string;
-  paths: DesktopRuntimePaths;
-  bundledRuntime: BundledRuntimeResult;
-  server: ReturnType<typeof startStudioServer>["server"];
+	url: string;
+	paths: DesktopRuntimePaths;
+	bundledRuntime: BundledRuntimeResult;
+	server: ReturnType<typeof startStudioServer>["server"];
 } {
-  const paths = resolveDesktopRuntimePaths(opts.executablePath, opts.homeDir);
-  mkdirSync(paths.defaultOutDir, { recursive: true });
-  const bundledRuntime = configureBundledRuntime(paths);
-  const { url, server } = startStudioServer({
-    repoRoot: paths.appDir,
-    defaultOutDir: paths.defaultOutDir,
-    host: opts.host ?? "127.0.0.1",
-    port: opts.port ?? 4477,
-  });
-  if (opts.openBrowser ?? true) openUrl(url);
+	const paths = resolveDesktopRuntimePaths(opts.executablePath, opts.homeDir);
+	mkdirSync(paths.defaultOutDir, { recursive: true });
+	const bundledRuntime = configureBundledRuntime(paths);
+	const { url, server } = startStudioServer({
+		repoRoot: paths.appDir,
+		defaultOutDir: paths.defaultOutDir,
+		host: opts.host ?? "127.0.0.1",
+		port: opts.port ?? 4477,
+	});
+	if (opts.openBrowser ?? true) openUrl(url);
 	return { url, paths, bundledRuntime, server };
 }
 
@@ -168,7 +256,7 @@ export function startPackagedWebClient(opts: DesktopClientOptions = {}): {
 	child.unref();
 
 	if (opts.openBrowser ?? true) {
-		setTimeout(() => openUrl(web.url), 800);
+		setTimeout(() => openDesktopWindow(web.url, paths), 800);
 	}
 	return { url: web.url, paths, bundledRuntime, process: child };
 }

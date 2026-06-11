@@ -32,7 +32,7 @@ dist/qingchen-cut-win32-x64/
 dist/qingchen-cut-win32-x64/QingchenCut.exe
 ```
 
-双击 `QingchenCut.exe` 也可以。程序会启动只监听 `127.0.0.1` 的本机 Web 服务，并打开：
+双击 `QingchenCut.exe` 也可以。程序会启动只监听 `127.0.0.1` 的本机 Web 服务，并用独立客户端窗口打开：
 
 ```text
 http://127.0.0.1:4477/projects
@@ -79,13 +79,28 @@ git push origin v0.1.0
 
 普通用户下载 Release 里的 `qingchen-cut-v0.1.0-win32-x64-setup.exe` 并运行安装；需要免安装时下载 `qingchen-cut-v0.1.0-win32-x64-portable.zip`，解压后运行 `QingchenCut.exe`。
 
+当前 Windows 包启动后会优先用 Microsoft Edge 的 app window 模式打开独立客户端窗口，因此用户看到的是应用窗口而不是普通浏览器标签页。找不到 Edge 时才回退到默认浏览器。
+
 ## 客户端边界
 
-- 用户看到的是原生 Web 编辑器项目页和编辑器，不是简化 Studio 页面。
+- 用户看到的是原生 Web 编辑器项目页和编辑器，不是简化 Studio 页面，也不是默认浏览器标签页。
+- 当前实现是 `QingchenCut.exe` 启动本机服务，再用 Edge app window 承载原生 Web；这是 P0 免环境客户端封装，不是最终纯 WebView2 壳。
 - 桌面包内置 Bun runtime，仅客户端内部使用，用户不需要安装 Bun。
 - 桌面包内置 FFmpeg/FFprobe；如果本机 `vendor/whisper` 和 `vendor/models` 存在，构建时也会带上 whisper.cpp 和模型。
 - 本地客户端模式会填充安全的本地默认 env，避免普通用户配置数据库、Redis、Marble、Freesound 等云端变量。
 - CLI/MCP/headless 仍是 AI 自动剪辑主路径；Web UI 不承载剪辑业务逻辑。
+
+## AI 快速接入
+
+让其他 AI 操作晴辰剪辑时，直接把 [Qingchen Cut AI Skill](qingchen-cut-ai-skill.md) 全文发给它即可。普通用户说明见 [AI 快速接入指南](ai-agent-quickstart.md)。
+
+AI 主路径仍然是：
+
+```text
+MCP/CLI → Editing DSL → validate → frame/contact-sheet 自检 → render
+```
+
+桌面客户端负责人工导入、预览和微调；不要让 AI 通过点击客户端 UI 来完成主剪辑流程。
 
 ## 开发诊断 Studio
 
@@ -105,6 +120,6 @@ bun run qc studio --port 4477 --out-dir docs-local/client-runs
 
 ## 当前限制
 
-- 当前 Windows 包仍使用默认浏览器承载原生 Web；下一步会封装 WebView/安装器，做成更完整的桌面窗口。
+- 当前 Windows 包优先使用 Edge app window 承载原生 Web；找不到 Edge 时才回退到默认浏览器。下一步可升级为纯 WebView2 原生壳。
 - 原生 Web 的人工编辑体验继承 OpenCut Classic；中文化会按真实使用路径逐步补齐。
 - 线上生成会在本地链路稳定后复用同一套 DSL/Core/render 后端。

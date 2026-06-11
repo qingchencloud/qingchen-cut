@@ -41,6 +41,12 @@ function findIscc(): string | null {
 	if (found) return found;
 
 	const candidates = [
+		join(
+			process.env["LOCALAPPDATA"] ?? "",
+			"Programs",
+			"Inno Setup 6",
+			"ISCC.exe",
+		),
 		"C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe",
 		"C:\\Program Files\\Inno Setup 6\\ISCC.exe",
 	];

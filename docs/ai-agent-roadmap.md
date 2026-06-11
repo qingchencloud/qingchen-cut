@@ -8,9 +8,10 @@
 - ✅ whisper.cpp 本地转写：`qc transcribe`（segments 时间戳 + SRT 输出，中文简体提示词），模型/二进制 `script/install-whisper.ts` 安装到 vendor/（不入库）。按文稿剪辑 = 转写 segments → AI 决定保留区间 → 写回 video 轨 in/out，引擎侧已具备全部原语。
 - ✅ 模板化与批量：`qc template`（`${var}` 占位符，整值保类型）、`qc batch`（顺序渲染，单失败不中断）。
 - ✅ 本地 TTS 配音与音画同步：`qc tts`（Windows SAPI 文本→WAV+真实时长）、`qc narrate`（文案分段→配音 WAV/SRT→同步 DSL）；MCP 共 15 工具，新增 `synthesize_speech` 与 `create_narrated_dsl`。
-- ✅ 本地桌面客户端 P0：`bun run build:desktop-client` 可构建 Windows 无 Bun 客户端包（`QingchenCut.exe` + 原生 Web standalone + 内置 Bun runtime + FFmpeg/FFprobe + 可选 whisper），启动后进入原生 Web `/projects`；`qc studio` 保留为开发诊断入口。文档见 `docs/local-studio-client.md`。
+- ✅ 本地桌面客户端 P0：`bun run build:desktop-client` 可构建 Windows 无 Bun 客户端包（`QingchenCut.exe` + 原生 Web standalone + 内置 Bun runtime + FFmpeg/FFprobe + 可选 whisper），启动后进入原生 Web `/projects`；Windows 下优先使用 Edge app window 独立窗口承载，不再默认打开普通浏览器标签页；`qc studio` 保留为开发诊断入口。文档见 `docs/local-studio-client.md`。
+- ✅ AI 接入文档：`docs/qingchen-cut-ai-skill.md` 可直接发给其他 AI 使用，`docs/ai-agent-quickstart.md` 面向普通用户说明 MCP/CLI 接入、客户端边界和 issue 提交流程。
 - ⏳ 进行中：端到端 MCP 实战验收持续扩展、`@qingchen/*` npm 包发布。
-- ▶ 下一阶段：WebView/安装器和客户端体验完善。目标是在不改写原生 Web 编辑器的前提下，把现有无 Bun 客户端包升级为更像传统桌面软件的窗口体验；剪辑逻辑继续沉淀在 DSL/Core/CLI/MCP。
+- ▶ 下一阶段：WebView/安装器和客户端体验完善。当前无 Bun 客户端包优先用 Edge app window 承载原生 Web；后续目标是在不改写原生 Web 编辑器的前提下升级为纯 WebView2 原生壳。剪辑逻辑继续沉淀在 DSL/Core/CLI/MCP。
 
 ## 目标
 
@@ -49,23 +50,21 @@ P2 成功标准：
 
 ```json
 {
-  "project": {
-    "name": "demo",
-    "canvas": { "width": 1920, "height": 1080 },
-    "fps": 30
-  },
-  "assets": [
-    { "id": "a", "path": "D:/clips/a.mp4" }
-  ],
-  "timeline": [
-    { "type": "video", "assetId": "a", "start": 0, "in": 2, "out": 8 },
-    { "type": "text", "text": "晴辰剪辑", "start": 0, "duration": 2 }
-  ],
-  "export": {
-    "format": "mp4",
-    "quality": "high",
-    "output": "D:/exports/demo.mp4"
-  }
+	"project": {
+		"name": "demo",
+		"canvas": { "width": 1920, "height": 1080 },
+		"fps": 30
+	},
+	"assets": [{ "id": "a", "path": "D:/clips/a.mp4" }],
+	"timeline": [
+		{ "type": "video", "assetId": "a", "start": 0, "in": 2, "out": 8 },
+		{ "type": "text", "text": "晴辰剪辑", "start": 0, "duration": 2 }
+	],
+	"export": {
+		"format": "mp4",
+		"quality": "high",
+		"output": "D:/exports/demo.mp4"
+	}
 }
 ```
 
