@@ -6,6 +6,8 @@
 			"outputs": [".next/**", "!.next/cache/**"],
 			"env": [
 				"NODE_ENV",
+				"QC_LOCAL_CLIENT",
+				"NEXT_PUBLIC_QC_CLIENT_MODE",
 				"NEXT_PUBLIC_SITE_URL",
 				"NEXT_PUBLIC_MARBLE_API_URL",
 				"DATABASE_URL",

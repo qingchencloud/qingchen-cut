@@ -23,7 +23,8 @@ import {
   validateJobFile,
 } from "@qingchen/cut-core";
 import { readFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
+import { startStudioServer } from "./studio";
 
 const HELP = `qc <command> [args]
 
@@ -63,6 +64,10 @@ const HELP = `qc <command> [args]
       --bgm <audio>          可选 BGM
       --title <文案>         可选标题；JSON script.title 也可提供
       --base-name <name>     产物基础文件名，默认 narration
+  studio                     启动本地 Studio 客户端（素材分析/配音/渲染/contact sheet）
+      --host <host>          默认 127.0.0.1
+      --port <port>          默认 4477
+      --out-dir <dir>        默认 docs-local/client-runs
   patch <job.json> --ops <ops.json>
                              JSON Patch 增量修改 DSL（add/remove/replace/test），校验通过才落盘
       --dry-run              只预览结果不写文件
@@ -320,6 +325,24 @@ async function main(argv: string[]): Promise<number> {
       const result = await patchJobFile(jobPath, ops as any, { dryRun: flags.has("--dry-run") });
       out(result);
       return result.ok ? 0 : 1;
+    }
+    case "studio": {
+      const host = flagValue(rest, "--host") ?? "127.0.0.1";
+      const port = Number(flagValue(rest, "--port") ?? 4477);
+      if (!Number.isFinite(port) || port <= 0) {
+        out({ ok: false, error: "--port 必须是有效端口号" });
+        return 2;
+      }
+      const defaultOutDir = flagValue(rest, "--out-dir") ?? join(process.cwd(), "docs-local", "client-runs");
+      const { url } = startStudioServer({
+        repoRoot: process.cwd(),
+        defaultOutDir,
+        host,
+        port,
+      });
+      out({ ok: true, url, defaultOutDir });
+      await new Promise(() => {});
+      return 0;
     }
     case "help":
     case "--help":

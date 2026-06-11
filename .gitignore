@@ -32,3 +32,4 @@ fixtures/media/
 fixtures/out/
 vendor/
 dist-packages/
+dist/

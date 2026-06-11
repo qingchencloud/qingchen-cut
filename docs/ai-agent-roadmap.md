@@ -8,8 +8,9 @@
 - ✅ whisper.cpp 本地转写：`qc transcribe`（segments 时间戳 + SRT 输出，中文简体提示词），模型/二进制 `script/install-whisper.ts` 安装到 vendor/（不入库）。按文稿剪辑 = 转写 segments → AI 决定保留区间 → 写回 video 轨 in/out，引擎侧已具备全部原语。
 - ✅ 模板化与批量：`qc template`（`${var}` 占位符，整值保类型）、`qc batch`（顺序渲染，单失败不中断）。
 - ✅ 本地 TTS 配音与音画同步：`qc tts`（Windows SAPI 文本→WAV+真实时长）、`qc narrate`（文案分段→配音 WAV/SRT→同步 DSL）；MCP 共 15 工具，新增 `synthesize_speech` 与 `create_narrated_dsl`。
+- ✅ 本地桌面客户端 P0：`bun run build:desktop-client` 可构建 Windows 无 Bun 客户端包（`QingchenCut.exe` + 原生 Web standalone + 内置 Bun runtime + FFmpeg/FFprobe + 可选 whisper），启动后进入原生 Web `/projects`；`qc studio` 保留为开发诊断入口。文档见 `docs/local-studio-client.md`。
 - ⏳ 进行中：端到端 MCP 实战验收持续扩展、`@qingchen/*` npm 包发布。
-- ▶ 下一阶段：免环境桌面客户端。目标是把 headless engine、CLI/MCP、FFmpeg/FFprobe、whisper.cpp/TTS 依赖与诊断修复打包进客户端，让普通用户下载即用；UI 只负责素材选择、任务管理、预览、日志和错误上报，剪辑逻辑继续沉淀在 DSL/Core/CLI/MCP。
+- ▶ 下一阶段：WebView/安装器和客户端体验完善。目标是在不改写原生 Web 编辑器的前提下，把现有无 Bun 客户端包升级为更像传统桌面软件的窗口体验；剪辑逻辑继续沉淀在 DSL/Core/CLI/MCP。
 
 ## 目标
 
