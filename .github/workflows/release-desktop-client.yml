@@ -109,11 +109,19 @@ jobs:
           if (Get-Variable PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
             $PSNativeCommandUseErrorActionPreference = $false
           }
+          $isPrerelease = $tag -match "-"
           gh release view $tag *> $null
           $releaseExists = $LASTEXITCODE -eq 0
 
           if ($releaseExists) {
             gh release upload $tag $env:QC_RELEASE_ZIP $env:QC_RELEASE_SHA --clobber
+            if ($isPrerelease) {
+              gh release edit $tag --prerelease
+            }
           } else {
-            gh release create $tag $env:QC_RELEASE_ZIP $env:QC_RELEASE_SHA --title $title --notes $notes --verify-tag
+            $createArgs = @("release", "create", $tag, $env:QC_RELEASE_ZIP, $env:QC_RELEASE_SHA, "--title", $title, "--notes", $notes, "--verify-tag")
+            if ($isPrerelease) {
+              $createArgs += "--prerelease"
+            }
+            gh @createArgs
           }
