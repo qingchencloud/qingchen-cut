@@ -51,6 +51,33 @@ QingchenCut.exe --no-open
 %USERPROFILE%\Videos\Qingchen Cut
 ```
 
+## GitHub Release 自动构建
+
+仓库包含 tag release workflow：
+
+```text
+.github/workflows/release-desktop-client.yml
+```
+
+推送 `v*` tag 后，GitHub Actions 会在 `windows-latest` 上执行：
+
+1. 安装 Bun。
+2. 安装 FFmpeg。
+3. 下载 whisper.cpp base bundle。
+4. 运行 `bun run build:desktop-client`。
+5. 压缩 `dist/qingchen-cut-win32-x64/`。
+6. 上传 workflow artifact。
+7. 创建或更新同名 GitHub Release，并附上 zip 和 `.sha256`。
+
+发布命令：
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+用户下载 Release 里的 `qingchen-cut-v0.1.0-win32-x64.zip`，解压后运行 `QingchenCut.exe`。
+
 ## 客户端边界
 
 - 用户看到的是原生 Web 编辑器项目页和编辑器，不是简化 Studio 页面。

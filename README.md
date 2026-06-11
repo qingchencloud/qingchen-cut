@@ -71,6 +71,17 @@ Windows 客户端包通过 `bun run build:desktop-client` 生成到 `dist/qingch
 
 短期实现继续复用现有 `packages/core` / `packages/cli` / `packages/mcp`，客户端只做打包、运行时配置、预览和诊断，不把剪辑业务逻辑重新写进 UI。后续再把同一套本地服务包进 WebView/安装器，做成更像传统桌面软件的窗口体验。
 
+### GitHub Release 自动构建
+
+推送 `v*` tag 会触发 `Desktop Client Release` workflow，在 GitHub Actions 的 Windows runner 上构建客户端并挂到同名 GitHub Release：
+
+```powershell
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Release 资产名形如 `qingchen-cut-v0.1.0-win32-x64.zip`，解压后运行 `QingchenCut.exe` 即可。
+
 ## 给 AI 使用
 
 如果你想让任意 AI 直接操作晴辰剪辑，把 [docs/qingchen-cut-ai-skill.md](docs/qingchen-cut-ai-skill.md) 的全文发给它即可。这个文档说明了：
