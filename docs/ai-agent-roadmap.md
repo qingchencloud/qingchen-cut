@@ -5,7 +5,8 @@
 - ✅ **P0 全部达成**：DSL schema（`packages/dsl`）、headless core（`packages/core`）、`qc` CLI（doctor/schema/validate/probe/plan/render/frame）、MP4 导出，全程零人工点击。
 - ✅ **P1 大部分达成**：音量、变速、fade 转场、画布比例（contain/cover/stretch）、DSL 回放（golden 测试）、结构化错误（code/stage/path/suggestion）。封面截图由 `qc frame` 覆盖。
 - ✅ **P2 部分达成**：MCP server（10 工具）、`qc analyze`（场景/静音/响度）、`qc contact-sheet`、`qc patch` 增量修改、渲染 NDJSON 进度。
-- ⏳ 进行中：whisper 本地转写、按文稿剪辑、批量队列、模板化生成。
+- ✅ whisper.cpp 本地转写：`qc transcribe`（segments 时间戳 + SRT 输出，中文简体提示词），模型/二进制 `script/install-whisper.ts` 安装到 vendor/（不入库）。按文稿剪辑 = 转写 segments → AI 决定保留区间 → 写回 video 轨 in/out，引擎侧已具备全部原语。
+- ⏳ 进行中：批量队列、模板化生成、端到端 MCP 实战验收。
 
 ## 目标
 

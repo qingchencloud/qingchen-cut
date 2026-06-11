@@ -13,6 +13,7 @@ import {
   probeMedia,
   renderJob,
   runDoctor,
+  transcribeMedia,
   validateJobFile,
 } from "@qingchen/cut-core";
 import { readFileSync } from "node:fs";
@@ -37,6 +38,10 @@ const HELP = `qc <command> [args]
   contact-sheet <media|job.json> --out <png>
                              九宫格缩略图（每格带时间戳），一张图看全片节奏
       --cols <n> --rows <n>  网格尺寸，默认 3x3
+  transcribe <media>         whisper.cpp 本地语音转写 → 带时间戳的 segments JSON
+      --model <名|路径>      模型，默认 base（更佳中文效果用 large-v3-turbo）
+      --lang <代码>          语言（zh/en/...），默认 auto
+      --srt <路径>           顺带写出 SRT 字幕文件
   patch <job.json> --ops <ops.json>
                              JSON Patch 增量修改 DSL（add/remove/replace/test），校验通过才落盘
       --dry-run              只预览结果不写文件
@@ -152,6 +157,23 @@ async function main(argv: string[]): Promise<number> {
       const result = await contactSheet(target, outPng, {
         ...(cols !== undefined ? { cols: Number(cols) } : {}),
         ...(rows !== undefined ? { rows: Number(rows) } : {}),
+      });
+      out(result);
+      return result.ok ? 0 : 1;
+    }
+    case "transcribe": {
+      const mediaPath = args[0];
+      if (!mediaPath) {
+        out({ ok: false, error: "用法: qc transcribe <media> [--model 名] [--lang zh] [--srt out.srt]" });
+        return 2;
+      }
+      const model = flagValue(rest, "--model");
+      const lang = flagValue(rest, "--lang");
+      const srt = flagValue(rest, "--srt");
+      const result = await transcribeMedia(mediaPath, {
+        ...(model !== undefined ? { model } : {}),
+        ...(lang !== undefined ? { language: lang } : {}),
+        ...(srt !== undefined ? { outSrt: srt } : {}),
       });
       out(result);
       return result.ok ? 0 : 1;

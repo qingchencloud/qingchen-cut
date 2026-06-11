@@ -62,7 +62,7 @@ afterAll(() => {
 });
 
 describe("MCP server 冒烟", () => {
-  test("tools/list 暴露全部 10 个工具", async () => {
+  test("tools/list 暴露全部 11 个工具", async () => {
     const res = await request(2, "tools/list", {});
     const names = res.result.tools.map((t: any) => t.name).sort();
     expect(names).toEqual(
@@ -76,6 +76,7 @@ describe("MCP server 冒烟", () => {
         "plan_render",
         "probe_media",
         "render_video",
+        "transcribe_media",
         "validate_dsl",
       ].sort(),
     );

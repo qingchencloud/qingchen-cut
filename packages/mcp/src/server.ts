@@ -17,6 +17,7 @@ import {
   probeMedia,
   renderJob,
   runDoctor,
+  transcribeMedia,
   validateJobFile,
 } from "@qingchen/cut-core";
 
@@ -198,6 +199,28 @@ tool(
   },
   async ({ jobPath, ops, dryRun }) => {
     const result = await patchJobFile(jobPath, ops as any, { dryRun: dryRun ?? false });
+    return jsonResult(result, result.ok);
+  },
+);
+
+tool(
+  "transcribe_media",
+  {
+    description:
+      "whisper.cpp 本地语音转写，输出带时间戳的 segments。可顺带写出 SRT 字幕文件直接挂进 DSL 的 subtitle 轨。按文稿剪辑工作流：转写 → 决定保留哪些 segments → 用其 startSec/endSec 写 video 轨 clips 的 in/out。",
+    inputSchema: {
+      path: z.string().describe("媒体文件本地路径（需有音频轨）"),
+      model: z.string().optional().describe("模型名（base/small/medium/large-v3-turbo）或模型文件路径，默认 base"),
+      language: z.string().optional().describe("语言代码（zh/en/...），默认 auto；中文会自动加简体提示词"),
+      outSrt: z.string().optional().describe("可选：SRT 字幕输出路径"),
+    },
+  },
+  async ({ path, model, language, outSrt }) => {
+    const result = await transcribeMedia(path, {
+      ...(model !== undefined ? { model } : {}),
+      ...(language !== undefined ? { language } : {}),
+      ...(outSrt !== undefined ? { outSrt } : {}),
+    });
     return jsonResult(result, result.ok);
   },
 );

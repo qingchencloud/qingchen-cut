@@ -8,3 +8,4 @@ export * from "./fonts";
 export * from "./analyze";
 export * from "./contact-sheet";
 export * from "./patch-file";
+export * from "./transcribe";

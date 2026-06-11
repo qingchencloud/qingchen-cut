@@ -1,12 +1,15 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { resolveTool, run } from "./ffmpeg";
+import { resolveWhisper, resolveWhisperModel } from "./transcribe";
 
 export interface DoctorCheck {
   id: string;
   ok: boolean;
   detail: string;
   suggestion?: string;
+  /** 可选能力（如转写），失败不影响整体 ok */
+  optional?: boolean;
 }
 
 export interface DoctorReport {
@@ -69,8 +72,34 @@ export async function runDoctor(): Promise<DoctorReport> {
     });
   }
 
+  // 转写能力（可选）
+  const whisper = resolveWhisper();
+  checks.push(
+    whisper
+      ? { id: "whisper", ok: true, optional: true, detail: `whisper-cli 可用（来源: ${whisper.source}, 路径: ${whisper.cliPath}）` }
+      : {
+          id: "whisper",
+          ok: false,
+          optional: true,
+          detail: "whisper-cli 未安装（转写功能不可用，其余功能不受影响）",
+          suggestion: "运行 bun script/install-whisper.ts 安装",
+        },
+  );
+  const model = resolveWhisperModel();
+  checks.push(
+    model
+      ? { id: "whisper-model", ok: true, optional: true, detail: `默认模型: ${model}` }
+      : {
+          id: "whisper-model",
+          ok: false,
+          optional: true,
+          detail: "whisper 默认模型缺失",
+          suggestion: "运行 bun script/install-whisper.ts --model base（或 large-v3-turbo 获得更佳中文效果）",
+        },
+  );
+
   return {
-    ok: checks.every((c) => c.ok),
+    ok: checks.every((c) => c.ok || c.optional),
     platform: `${process.platform} ${process.arch}`,
     checks,
   };

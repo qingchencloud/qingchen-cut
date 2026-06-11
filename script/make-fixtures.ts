@@ -58,6 +58,27 @@ const FIXTURES: Fixture[] = [
   },
 ];
 
+/** Windows SAPI TTS 生成中文语音素材（转写测试用）；非 Windows 或无中文音色时跳过 */
+function makeSpeechFixture(): string | null {
+  if (process.platform !== "win32") return null;
+  const out = join(mediaDir, "语音 测试.wav");
+  if (existsSync(out) && !force) return null;
+  const ps = [
+    "Add-Type -AssemblyName System.Speech;",
+    "$s = New-Object System.Speech.Synthesis.SpeechSynthesizer;",
+    "$zh = $s.GetInstalledVoices() | ForEach-Object { $_.VoiceInfo.Name } | Where-Object { $_ -match 'Huihui|Kangkang|Yaoyao' } | Select-Object -First 1;",
+    "if ($zh) { $s.SelectVoice($zh) };",
+    `$s.SetOutputToWaveFile('${out.replace(/'/g, "''")}');`,
+    "$s.Speak('晴辰剪辑是一个人工智能视频剪辑工具。今天天气很好。');",
+    "$s.Dispose();",
+  ].join(" ");
+  const r = require("node:child_process").spawnSync("powershell", ["-NoProfile", "-Command", ps], {
+    windowsHide: true,
+    timeout: 60_000,
+  });
+  return r.status === 0 && existsSync(out) ? out : null;
+}
+
 export async function makeFixtures(): Promise<string[]> {
   const ffmpeg = resolveTool("ffmpeg");
   if (!ffmpeg) throw new Error("找不到 ffmpeg，先运行 qc doctor 检查环境");
@@ -74,6 +95,8 @@ export async function makeFixtures(): Promise<string[]> {
     }
     made.push(out);
   }
+  const speech = makeSpeechFixture();
+  if (speech) made.push(speech);
   return made;
 }
 
