@@ -31,3 +31,4 @@ rust-migration-notes.md
 fixtures/media/
 fixtures/out/
 vendor/
+dist-packages/

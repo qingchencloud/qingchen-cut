@@ -2,7 +2,7 @@ import { issue, type QcIssue } from "@qingchen/cut-dsl";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, resolve } from "node:path";
-import { resolveTool, run } from "./ffmpeg";
+import { resolveTool, resolveVendoredBin, run } from "./ffmpeg";
 import { probeMedia } from "./probe";
 
 /**
@@ -63,6 +63,12 @@ export function resolveWhisper(): ResolvedWhisper | null {
     const p = join(root, "vendor", "whisper", exe);
     if (existsSync(p)) return { cliPath: p, source: "vendor" };
   }
+
+  const vendoredNpm = resolveVendoredBin(
+    ["@qingchen/whisper-win32-x64", "@qq1186258278/whisper-win32-x64"],
+    exe,
+  );
+  if (vendoredNpm) return { cliPath: vendoredNpm, source: "vendor" };
 
   const fromPath = typeof Bun !== "undefined" ? Bun.which("whisper-cli") : null;
   if (fromPath) return { cliPath: fromPath, source: "system-path" };

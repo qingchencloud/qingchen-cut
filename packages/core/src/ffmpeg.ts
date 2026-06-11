@@ -10,10 +10,32 @@ export interface ResolvedTool {
   source: "env" | "vendored" | "system-path";
 }
 
+/** 单二进制 vendored npm 包候选名（org scope 优先，个人 scope 兜底） */
+const VENDORED_PACKAGES: Record<ToolName, string[]> = {
+  ffmpeg: ["@qingchen/ffmpeg-win32-x64", "@qq1186258278/ffmpeg-win32-x64"],
+  ffprobe: ["@qingchen/ffprobe-win32-x64", "@qq1186258278/ffprobe-win32-x64"],
+};
+
+/** 在已安装的 vendored npm 包里找二进制（bin/<exe>） */
+export function resolveVendoredBin(packageNames: string[], exe: string): string | null {
+  for (const pkg of packageNames) {
+    try {
+      const pkgJson = import.meta.resolve?.(`${pkg}/package.json`);
+      if (!pkgJson) continue;
+      const dir = dirname(new URL(pkgJson).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
+      const candidate = join(dir, "bin", exe);
+      if (existsSync(candidate)) return candidate;
+    } catch {
+      // 该包未安装，试下一个候选
+    }
+  }
+  return null;
+}
+
 /**
  * FFmpeg/FFprobe 解析顺序：
  * 1. 环境变量 QC_FFMPEG_PATH（指向 ffmpeg.exe 或其所在目录）
- * 2. vendored npm 包 @qingchen/ffmpeg-win32-x64
+ * 2. vendored npm 包（script/build-binary-packages.ts 产出）
  * 3. 系统 PATH
  */
 export function resolveTool(name: ToolName): ResolvedTool | null {
@@ -26,16 +48,8 @@ export function resolveTool(name: ToolName): ResolvedTool | null {
     if (existsSync(candidate)) return { path: candidate, source: "env" };
   }
 
-  try {
-    const pkgJson = import.meta.resolve?.("@qingchen/ffmpeg-win32-x64/package.json");
-    if (pkgJson) {
-      const dir = dirname(new URL(pkgJson).pathname.replace(/^\/([A-Za-z]:)/, "$1"));
-      const candidate = join(dir, "bin", exe);
-      if (existsSync(candidate)) return { path: candidate, source: "vendored" };
-    }
-  } catch {
-    // vendored 包未安装，继续向下找
-  }
+  const vendored = resolveVendoredBin(VENDORED_PACKAGES[name], exe);
+  if (vendored) return { path: vendored, source: "vendored" };
 
   const fromPath = typeof Bun !== "undefined" ? Bun.which(name) : null;
   if (fromPath) return { path: fromPath, source: "system-path" };
