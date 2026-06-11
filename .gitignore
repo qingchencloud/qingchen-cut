@@ -26,3 +26,8 @@ target/
 .cargo-tools/
 
 rust-migration-notes.md
+
+# 生成的测试素材与导出产物
+fixtures/media/
+fixtures/out/
+vendor/

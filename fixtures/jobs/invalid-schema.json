@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "project": { "name": "", "canvas": { "width": "wide", "height": 360 } },
+  "tracks": [],
+  "export": { "output": "../out/bad.mp4" }
+}

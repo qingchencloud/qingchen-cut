@@ -1,0 +1,20 @@
+{
+  "name": "@qingchen/cut-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "qc": "./src/qc.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@qingchen/cut-core": "workspace:*",
+    "@qingchen/cut-dsl": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0"
+  }
+}

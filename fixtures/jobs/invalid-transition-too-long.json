@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "project": { "name": "bad-transition", "canvas": { "width": 640, "height": 360 } },
+  "assets": [
+    { "id": "a", "path": "../media/测试 红色.mp4" },
+    { "id": "b", "path": "../media/test-blue.mp4" }
+  ],
+  "tracks": [
+    {
+      "id": "v1",
+      "type": "video",
+      "clips": [
+        { "assetId": "a", "in": 0, "out": 2, "transitionOut": { "type": "fade", "duration": 1.5 } },
+        { "assetId": "b", "in": 0, "out": 2 }
+      ]
+    }
+  ],
+  "export": { "output": "../out/bad.mp4" }
+}

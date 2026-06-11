@@ -1,0 +1,14 @@
+{
+  "name": "@qingchen/cut-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "晴辰剪辑 MCP server（M3 实现，当前为占位骨架）",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@qingchen/cut-core": "workspace:*",
+    "@qingchen/cut-dsl": "workspace:*"
+  }
+}

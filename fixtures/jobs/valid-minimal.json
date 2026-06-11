@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "project": {
+    "name": "minimal",
+    "canvas": { "width": 640, "height": 360 }
+  },
+  "assets": [{ "id": "a", "path": "../media/测试 红色.mp4" }],
+  "tracks": [
+    {
+      "id": "v1",
+      "type": "video",
+      "clips": [{ "assetId": "a", "in": 0, "out": 3 }]
+    }
+  ],
+  "export": { "output": "../out/minimal.mp4" }
+}

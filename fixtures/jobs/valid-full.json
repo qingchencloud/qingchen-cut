@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "project": {
+    "name": "full-demo",
+    "canvas": { "width": 1080, "height": 1920 },
+    "fps": 30,
+    "background": "#101010"
+  },
+  "assets": [
+    { "id": "red", "path": "../media/测试 红色.mp4" },
+    { "id": "blue", "path": "../media/test-blue.mp4" },
+    { "id": "bgm", "path": "../media/bgm.mp3" }
+  ],
+  "tracks": [
+    {
+      "id": "v1",
+      "type": "video",
+      "clips": [
+        {
+          "assetId": "red",
+          "in": 0.5,
+          "out": 3.5,
+          "fit": "cover",
+          "transitionOut": { "type": "fade", "duration": 0.5 }
+        },
+        { "assetId": "blue", "in": 0, "out": 2.5, "speed": 1.25, "volume": 0.8 }
+      ]
+    },
+    {
+      "id": "t1",
+      "type": "text",
+      "clips": [
+        {
+          "text": "晴辰剪辑\nQingchen Cut",
+          "start": 0.2,
+          "duration": 2,
+          "style": {
+            "fontFamily": "Microsoft YaHei",
+            "fontSize": 88,
+            "color": "#ffffff",
+            "stroke": { "color": "#000000", "width": 3 },
+            "position": { "x": 0.5, "y": 0.2, "anchor": "center" }
+          }
+        }
+      ]
+    },
+    {
+      "id": "s1",
+      "type": "subtitle",
+      "source": { "srt": "../subs/demo.srt" }
+    },
+    {
+      "id": "a1",
+      "type": "audio",
+      "clips": [
+        { "assetId": "bgm", "start": 0, "volume": 0.25, "fadeIn": 0.5, "fadeOut": 1 }
+      ]
+    }
+  ],
+  "export": {
+    "format": "mp4",
+    "video": { "codec": "h264", "crf": 20, "preset": "fast" },
+    "audio": { "codec": "aac", "bitrate": "192k" },
+    "output": "../out/full-demo.mp4"
+  }
+}

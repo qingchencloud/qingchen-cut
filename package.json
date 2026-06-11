@@ -18,6 +18,9 @@
     "lint:web": "eslint apps/web/src --ext .ts,.tsx",
     "lint:web:fix": "eslint apps/web/src --ext .ts,.tsx --fix",
     "preview:web": "turbo run preview --filter=@opencut/web",
+    "qc": "bun packages/cli/src/qc.ts",
+    "make:fixtures": "bun script/make-fixtures.ts",
+    "test:headless": "bun test packages",
     "publish:wasm": "bun run build:wasm && npm publish rust/wasm/pkg --access public",
     "start:tools": "turbo run start --filter=@opencut/tools",
     "test": "bun test"
@@ -31,6 +34,7 @@
     "opencut-wasm": "^0.2.10"
   },
   "devDependencies": {
+    "@types/bun": "^1.3.0",
     "@eslint/js": "^9.39.4",
     "@next/eslint-plugin-next": "^16.2.4",
     "eslint": "^9.39.4",
