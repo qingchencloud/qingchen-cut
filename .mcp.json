@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "qingchen-cut": {
+      "command": "bun",
+      "args": ["packages/mcp/src/server.ts"]
+    }
+  }
+}

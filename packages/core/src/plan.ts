@@ -202,6 +202,9 @@ export function compilePlan(job: Job, ctx: CompileContext, opts: CompileOptions 
       const name = `text-${textFiles.length}.txt`;
       textFiles.push({ name, content: clip.text });
       const pos = textPosition(clip);
+      // 多行文本逐行对齐（FFmpeg 7+ 的 text_align）；锚点在左/右时跟随，否则居中
+      const align =
+        clip.style.position.anchor === "left" ? "L" : clip.style.position.anchor === "right" ? "R" : "C";
       const fontFile = findFontFile(clip.style.fontFamily);
       const fontOpt = fontFile
         ? `fontfile=${escapeFilterPath(fontFile)}`
@@ -211,6 +214,7 @@ export function compilePlan(job: Job, ctx: CompileContext, opts: CompileOptions 
         fontOpt,
         `fontsize=${clip.style.fontSize}`,
         `fontcolor=${color(clip.style.color)}`,
+        `text_align=${align}`,
         ...(clip.style.stroke
           ? [`borderw=${clip.style.stroke.width}`, `bordercolor=${color(clip.style.stroke.color)}`]
           : []),

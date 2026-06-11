@@ -3,12 +3,24 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "晴辰剪辑 MCP server（M3 实现，当前为占位骨架）",
+  "description": "晴辰剪辑 MCP server：把 headless 剪辑引擎暴露为 AI 工具",
+  "bin": {
+    "qc-mcp": "./src/server.ts"
+  },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/server.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "test": "bun test"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.21.0",
     "@qingchen/cut-core": "workspace:*",
-    "@qingchen/cut-dsl": "workspace:*"
+    "@qingchen/cut-dsl": "workspace:*",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0"
   }
 }

@@ -5,3 +5,6 @@ export * from "./validate";
 export * from "./plan";
 export * from "./render";
 export * from "./fonts";
+export * from "./analyze";
+export * from "./contact-sheet";
+export * from "./patch-file";

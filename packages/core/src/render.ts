@@ -21,7 +21,7 @@ export interface RenderResult {
   issues: QcIssue[];
 }
 
-interface Prepared {
+export interface Prepared {
   job: Job;
   plan: RenderPlan;
   tempDir: string;
@@ -30,7 +30,7 @@ interface Prepared {
 }
 
 /** 校验 + 编译 + 写临时文件（filtergraph 脚本、drawtext 文本） */
-async function prepare(
+export async function prepareJob(
   jobFilePath: string,
   compileOpts: { videoOnly?: boolean } = {},
 ): Promise<Prepared | { issues: QcIssue[] }> {
@@ -57,7 +57,7 @@ async function prepare(
   return { job: validated.job, plan, tempDir, filterScriptPath, issues: validated.issues };
 }
 
-function cleanup(tempDir: string, keep: boolean): void {
+function cleanupTemp(tempDir: string, keep: boolean): void {
   if (keep) return;
   try {
     rmSync(tempDir, { recursive: true, force: true });
@@ -74,13 +74,13 @@ export interface RenderOptions {
 
 /** 渲染整个 job 到 MP4 */
 export async function renderJob(jobFilePath: string, opts: RenderOptions = {}): Promise<RenderResult> {
-  const prepared = await prepare(jobFilePath);
+  const prepared = await prepareJob(jobFilePath);
   if (!("plan" in prepared)) return { ok: false, issues: prepared.issues };
   const { job, plan, tempDir, filterScriptPath, issues } = prepared;
 
   const ffmpeg = resolveTool("ffmpeg");
   if (!ffmpeg) {
-    cleanup(tempDir, false);
+    cleanupTemp(tempDir, false);
     return {
       ok: false,
       issues: [...issues, issue("FFMPEG_NOT_FOUND", "render", "找不到 ffmpeg", { suggestion: "运行 qc doctor" })],
@@ -121,7 +121,7 @@ export async function renderJob(jobFilePath: string, opts: RenderOptions = {}): 
   });
 
   if (result.code !== 0 || !existsSync(plan.outputPath)) {
-    cleanup(tempDir, opts.keepTemp ?? true); // 失败默认保留现场
+    cleanupTemp(tempDir, opts.keepTemp ?? true); // 失败默认保留现场
     return {
       ok: false,
       issues: [
@@ -133,7 +133,7 @@ export async function renderJob(jobFilePath: string, opts: RenderOptions = {}): 
     };
   }
 
-  cleanup(tempDir, opts.keepTemp ?? false);
+  cleanupTemp(tempDir, opts.keepTemp ?? false);
   return {
     ok: true,
     output: plan.outputPath,
@@ -156,11 +156,11 @@ export interface PlanResult {
 
 /** dry-run：输出将要执行的渲染计划，不实际渲染 */
 export async function planJob(jobFilePath: string): Promise<PlanResult> {
-  const prepared = await prepare(jobFilePath);
+  const prepared = await prepareJob(jobFilePath);
   if (!("plan" in prepared)) return { ok: false, issues: prepared.issues };
   const { job, plan, tempDir, filterScriptPath, issues } = prepared;
   const args = buildRenderArgs(job, plan, filterScriptPath);
-  cleanup(tempDir, false);
+  cleanupTemp(tempDir, false);
   return {
     ok: true,
     totalDurationSec: plan.totalDurationSec,
@@ -181,12 +181,12 @@ export interface FrameResult {
 
 /** 抽取成片任意时间点的单帧 PNG，供 AI 视觉复核 */
 export async function extractFrame(jobFilePath: string, atSec: number, outPng: string): Promise<FrameResult> {
-  const prepared = await prepare(jobFilePath, { videoOnly: true });
+  const prepared = await prepareJob(jobFilePath, { videoOnly: true });
   if (!("plan" in prepared)) return { ok: false, issues: prepared.issues };
   const { plan, tempDir, filterScriptPath, issues } = prepared;
 
   if (atSec >= plan.totalDurationSec) {
-    cleanup(tempDir, false);
+    cleanupTemp(tempDir, false);
     return {
       ok: false,
       issues: [
@@ -200,7 +200,7 @@ export async function extractFrame(jobFilePath: string, atSec: number, outPng: s
 
   const ffmpeg = resolveTool("ffmpeg");
   if (!ffmpeg) {
-    cleanup(tempDir, false);
+    cleanupTemp(tempDir, false);
     return { ok: false, issues: [issue("FFMPEG_NOT_FOUND", "render", "找不到 ffmpeg")] };
   }
 
@@ -209,7 +209,7 @@ export async function extractFrame(jobFilePath: string, atSec: number, outPng: s
     timeoutMs: 300_000,
   });
   const ok = result.code === 0 && existsSync(outPng);
-  cleanup(tempDir, !ok); // 失败保留现场，成功清理
+  cleanupTemp(tempDir, !ok); // 失败保留现场，成功清理
   if (!ok) {
     return {
       ok: false,
