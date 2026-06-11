@@ -80,7 +80,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-Release 资产名形如 `qingchen-cut-v0.1.0-win32-x64.zip`，解压后运行 `QingchenCut.exe` 即可。
+Release 会优先提供安装器 `qingchen-cut-v0.1.0-win32-x64-setup.exe`，普通用户下载后直接运行安装即可；同时保留 `qingchen-cut-v0.1.0-win32-x64-portable.zip` 作为免安装解压版。
 
 ## 给 AI 使用
 

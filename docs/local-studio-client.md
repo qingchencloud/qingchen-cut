@@ -65,9 +65,10 @@ QingchenCut.exe --no-open
 2. 安装 FFmpeg。
 3. 下载 whisper.cpp base bundle。
 4. 运行 `bun run build:desktop-client`。
-5. 压缩 `dist/qingchen-cut-win32-x64/`。
-6. 上传 workflow artifact。
-7. 创建或更新同名 GitHub Release，并附上 zip 和 `.sha256`。
+5. 用 Inno Setup 生成 Windows 安装器 `.exe`。
+6. 额外压缩 `dist/qingchen-cut-win32-x64/` 作为 portable zip。
+7. 上传 workflow artifact。
+8. 创建或更新同名 GitHub Release，并附上安装器、portable zip 和 `.sha256`。
 
 发布命令：
 
@@ -76,7 +77,7 @@ git tag v0.1.0
 git push origin v0.1.0
 ```
 
-用户下载 Release 里的 `qingchen-cut-v0.1.0-win32-x64.zip`，解压后运行 `QingchenCut.exe`。
+普通用户下载 Release 里的 `qingchen-cut-v0.1.0-win32-x64-setup.exe` 并运行安装；需要免安装时下载 `qingchen-cut-v0.1.0-win32-x64-portable.zip`，解压后运行 `QingchenCut.exe`。
 
 ## 客户端边界
 

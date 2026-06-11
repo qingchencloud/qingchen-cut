@@ -39,8 +39,8 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Install FFmpeg
-        run: choco install ffmpeg -y --no-progress
+      - name: Install FFmpeg and installer tools
+        run: choco install ffmpeg innosetup -y --no-progress
 
       - name: Install whisper.cpp bundle
         env:
@@ -66,26 +66,42 @@ jobs:
           if ($manifest.files.ffmpegBytes -le 0) { throw "FFmpeg was not bundled" }
           if ($manifest.files.ffprobeBytes -le 0) { throw "FFprobe was not bundled" }
 
+      - name: Build Windows installer
+        run: bun run build:windows-installer --version ${{ github.ref_name }}
+
       - name: Package release assets
         run: |
           $tag = "${{ github.ref_name }}"
-          $zip = "qingchen-cut-$tag-win32-x64.zip"
-          $sha = "$zip.sha256"
+          $setup = "dist/release/qingchen-cut-$tag-win32-x64-setup.exe"
+          $setupSha = "$setup.sha256"
+          $portableZip = "qingchen-cut-$tag-win32-x64-portable.zip"
+          $portableSha = "$portableZip.sha256"
 
-          Compress-Archive -Path "dist/qingchen-cut-win32-x64/*" -DestinationPath $zip -Force
-          $hash = Get-FileHash $zip -Algorithm SHA256
-          "$($hash.Hash)  $zip" | Set-Content $sha -Encoding ascii
+          if (-not (Test-Path $setup)) { throw "Missing installer: $setup" }
 
-          "QC_RELEASE_ZIP=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-          "QC_RELEASE_SHA=$sha" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          $setupHash = Get-FileHash $setup -Algorithm SHA256
+          "$($setupHash.Hash)  $(Split-Path $setup -Leaf)" | Set-Content $setupSha -Encoding ascii
+
+          Compress-Archive -Path "dist/qingchen-cut-win32-x64/*" -DestinationPath $portableZip -Force
+          $portableHash = Get-FileHash $portableZip -Algorithm SHA256
+          "$($portableHash.Hash)  $portableZip" | Set-Content $portableSha -Encoding ascii
+
+          "QC_RELEASE_SETUP=$setup" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "QC_RELEASE_SETUP_SHA=$setupSha" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "QC_RELEASE_SETUP_NAME=$(Split-Path $setup -Leaf)" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "QC_RELEASE_PORTABLE_ZIP=$portableZip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "QC_RELEASE_PORTABLE_SHA=$portableSha" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          "QC_RELEASE_PORTABLE_NAME=$portableZip" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
         with:
           name: qingchen-cut-${{ github.ref_name }}-win32-x64
           path: |
-            qingchen-cut-${{ github.ref_name }}-win32-x64.zip
-            qingchen-cut-${{ github.ref_name }}-win32-x64.zip.sha256
+            dist/release/qingchen-cut-${{ github.ref_name }}-win32-x64-setup.exe
+            dist/release/qingchen-cut-${{ github.ref_name }}-win32-x64-setup.exe.sha256
+            qingchen-cut-${{ github.ref_name }}-win32-x64-portable.zip
+            qingchen-cut-${{ github.ref_name }}-win32-x64-portable.zip.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -98,12 +114,12 @@ jobs:
           $notes = @"
           Windows desktop client for Qingchen Cut.
 
-          - Download and unzip `${env:QC_RELEASE_ZIP}`.
-          - Run `QingchenCut.exe`.
+          - Download `${env:QC_RELEASE_SETUP_NAME}` for the standard installer.
+          - Advanced users can download `${env:QC_RELEASE_PORTABLE_NAME}` for a portable unzip-and-run package.
           - The app starts a local server and opens the native Web editor at `/projects`.
           - Includes the internal Bun runtime, FFmpeg/FFprobe, and the bundled whisper.cpp base model when the build step succeeds.
 
-          The `.sha256` file can be used to verify the downloaded zip.
+          The `.sha256` files can be used to verify downloads.
           "@
 
           if (Get-Variable PSNativeCommandUseErrorActionPreference -ErrorAction SilentlyContinue) {
@@ -114,12 +130,25 @@ jobs:
           $releaseExists = $LASTEXITCODE -eq 0
 
           if ($releaseExists) {
-            gh release upload $tag $env:QC_RELEASE_ZIP $env:QC_RELEASE_SHA --clobber
+            gh release upload $tag $env:QC_RELEASE_SETUP $env:QC_RELEASE_SETUP_SHA $env:QC_RELEASE_PORTABLE_ZIP $env:QC_RELEASE_PORTABLE_SHA --clobber
             if ($isPrerelease) {
               gh release edit $tag --prerelease
             }
           } else {
-            $createArgs = @("release", "create", $tag, $env:QC_RELEASE_ZIP, $env:QC_RELEASE_SHA, "--title", $title, "--notes", $notes, "--verify-tag")
+            $createArgs = @(
+              "release",
+              "create",
+              $tag,
+              $env:QC_RELEASE_SETUP,
+              $env:QC_RELEASE_SETUP_SHA,
+              $env:QC_RELEASE_PORTABLE_ZIP,
+              $env:QC_RELEASE_PORTABLE_SHA,
+              "--title",
+              $title,
+              "--notes",
+              $notes,
+              "--verify-tag"
+            )
             if ($isPrerelease) {
               $createArgs += "--prerelease"
             }
