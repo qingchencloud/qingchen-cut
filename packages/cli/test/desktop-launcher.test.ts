@@ -6,6 +6,7 @@ import {
 	configureBundledRuntime,
 	createDesktopWindowLaunch,
 	createPackagedWebEnv,
+	parseWindowsAppPathOutput,
 	resolveDesktopRuntimePaths,
 	resolvePackagedWebRuntime,
 } from "../src/desktop-launcher";
@@ -140,6 +141,17 @@ describe("desktop launcher runtime", () => {
 		);
 
 		rmSync(root, { recursive: true, force: true });
+	});
+
+	test("parses Edge App Paths registry output", () => {
+		const parsed = parseWindowsAppPathOutput(`
+HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\msedge.exe
+    (Default)    REG_SZ    C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe
+`);
+
+		expect(parsed).toEqual([
+			"C:\\Program Files\\Microsoft\\Edge\\Application\\msedge.exe",
+		]);
 	});
 
 	test("falls back to the default browser command when Edge is unavailable", () => {

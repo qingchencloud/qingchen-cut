@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { existsSync, mkdirSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -132,10 +132,39 @@ function openUrl(url: string): void {
 	child.unref();
 }
 
+export function parseWindowsAppPathOutput(output: string): string[] {
+	const found: string[] = [];
+	for (const line of output.split(/\r?\n/)) {
+		const match = /\s+REG_SZ\s+(.+?)\s*$/.exec(line);
+		if (match?.[1]) found.push(match[1].trim());
+	}
+	return found;
+}
+
+function queryWindowsAppPath(exeName: string): string[] {
+	if (process.platform !== "win32") return [];
+	const keys = [
+		`HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${exeName}`,
+		`HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${exeName}`,
+		`HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\App Paths\\${exeName}`,
+	];
+	const found: string[] = [];
+	for (const key of keys) {
+		const result = spawnSync("reg", ["query", key, "/ve"], {
+			encoding: "utf8",
+			windowsHide: true,
+		});
+		if (result.status !== 0) continue;
+		found.push(...parseWindowsAppPathOutput(result.stdout));
+	}
+	return found;
+}
+
 function windowsEdgeCandidates(): string[] {
 	const programFilesX86 = process.env["ProgramFiles(x86)"];
 	return [
 		process.env["QC_EDGE_PATH"] ?? "",
+		...queryWindowsAppPath("msedge.exe"),
 		programFilesX86
 			? join(programFilesX86, "Microsoft", "Edge", "Application", "msedge.exe")
 			: "",
