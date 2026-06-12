@@ -3,9 +3,7 @@ import { DEFAULTS } from "@/timeline/defaults";
 import type { TextElement } from "@/timeline";
 import type { TextBackground } from "@/text/background";
 import { resolveNumberAtTime } from "@/animation/values";
-import {
-	getTextVisualRect,
-} from "./layout";
+import { getTextVisualRect } from "./layout";
 import {
 	measureTextLayout,
 	type MeasuredTextLayout,
@@ -138,7 +136,7 @@ export function buildTextLayoutParamsFromElement({
 		content: readStringParam({
 			params: element.params,
 			key: "content",
-			fallback: "Default text",
+			fallback: "默认文字",
 		}),
 		fontSize: readNumberParam({
 			params: element.params,

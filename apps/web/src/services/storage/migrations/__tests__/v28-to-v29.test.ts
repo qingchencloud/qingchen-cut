@@ -19,7 +19,7 @@ describe("V28 to V29 Migration", () => {
 									{
 										id: "video-1",
 										type: "video",
-										name: "Video",
+										name: "视频",
 										transform: {
 											position: { x: 12, y: -4 },
 											scaleX: 1.25,
@@ -41,7 +41,7 @@ describe("V28 to V29 Migration", () => {
 										{
 											id: "text-1",
 											type: "text",
-											name: "Text",
+											name: "文字",
 											content: "Hello",
 											fontSize: 20,
 											fontFamily: "Inter",

@@ -53,17 +53,17 @@ export function DeleteProjectDialog({
 					<Alert variant="destructive">
 						<AlertTitle>警告</AlertTitle>
 						<AlertDescription>
-							这会永久删除{" "}
-							{singleName ? `“${singleName}”` : `${count} 个项目`} 以及相关文件。
+							这会永久删除 {singleName ? `“${singleName}”` : `${count} 个项目`}{" "}
+							以及相关文件。
 						</AlertDescription>
 					</Alert>
 					<div className="flex flex-col gap-3">
 						<Label className="text-xs font-semibold text-slate-500">
-							输入 “DELETE” 确认
+							输入“删除”确认
 						</Label>
 						<Input
 							type="text"
-							placeholder="DELETE"
+							placeholder="删除"
 							size="lg"
 							variant="destructive"
 						/>

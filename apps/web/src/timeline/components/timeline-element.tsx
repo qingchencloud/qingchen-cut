@@ -47,7 +47,10 @@ import {
 	getSourceAudioActionLabel,
 	isSourceAudioSeparated,
 } from "@/timeline/audio-separation";
-import { buildWaveformGainSamples, isElementMuted } from "@/timeline/audio-state";
+import {
+	buildWaveformGainSamples,
+	isElementMuted,
+} from "@/timeline/audio-state";
 import { getTimelinePixelsPerSecond } from "@/timeline";
 import { buildWaveformSourceKey } from "@/media/waveform-summary";
 import { addMediaTime, type MediaTime, TICKS_PER_SECOND } from "@/wasm";
@@ -427,7 +430,7 @@ export function TimelineElement({
 						action="split"
 						icon={<HugeiconsIcon icon={ScissorIcon} />}
 					>
-						Split
+						分割
 					</ActionMenuItem>
 					<CopyMenuItem />
 					{selectedElements.length === 1 && (
@@ -435,7 +438,7 @@ export function TimelineElement({
 							action="duplicate-selected"
 							icon={<HugeiconsIcon icon={Copy01Icon} />}
 						>
-							Duplicate
+							复制
 						</ActionMenuItem>
 					)}
 					{canElementHaveAudio(element) && hasAudio && (
@@ -477,7 +480,7 @@ export function TimelineElement({
 								toggleElementExpanded(element.id);
 							}}
 						>
-							{isExpanded ? "Collapse keyframes" : "Expand keyframes"}
+							{isExpanded ? "折叠关键帧" : "展开关键帧"}
 						</ContextMenuItem>
 					)}
 					{selectedElements.length === 1 && hasMediaId(element) && (
@@ -488,13 +491,13 @@ export function TimelineElement({
 									handleRevealInMedia({ event })
 								}
 							>
-								Reveal media
+								显示媒体
 							</ContextMenuItem>
 							<ContextMenuItem
 								icon={<HugeiconsIcon icon={Exchange01Icon} />}
 								disabled
 							>
-								Replace media
+								替换媒体
 							</ContextMenuItem>
 						</>
 					)}
@@ -649,7 +652,7 @@ function ResizeHandle({
 			)}
 			onMouseDown={(event) => onResizeStart({ event, element, track, side })}
 			onClick={(event) => event.stopPropagation()}
-			aria-label={`${isLeft ? "Left" : "Right"} resize handle`}
+			aria-label={`${isLeft ? "左侧" : "右侧"}调整大小手柄`}
 		></button>
 	);
 }
@@ -722,7 +725,7 @@ function KeyframeIndicators({
 						indicatorTime: indicator.time,
 					})
 				}
-				aria-label="Select keyframe"
+				aria-label="选择关键帧"
 			>
 				<HugeiconsIcon
 					icon={KeyframeIcon}
@@ -875,7 +878,7 @@ function ExpandedKeyframeLanes({
 											indicatorTime: kf.time,
 										});
 									}}
-									aria-label="Select keyframe"
+									aria-label="选择关键帧"
 								>
 									<HugeiconsIcon
 										icon={KeyframeIcon}
@@ -909,7 +912,9 @@ function TextElementContent({
 	return (
 		<div className="flex size-full items-center justify-start pl-2">
 			<span className="truncate text-xs text-white">
-				{typeof element.params.content === "string" ? element.params.content : ""}
+				{typeof element.params.content === "string"
+					? element.params.content
+					: ""}
 			</span>
 		</div>
 	);
@@ -1187,7 +1192,7 @@ function CopyMenuItem() {
 			action="copy-selected"
 			icon={<HugeiconsIcon icon={Copy01Icon} />}
 		>
-			Copy
+			复制
 		</ActionMenuItem>
 	);
 }
@@ -1214,7 +1219,7 @@ function MuteMenuItem({
 
 	return (
 		<ActionMenuItem action="toggle-elements-muted-selected" icon={getIcon()}>
-			{isMuted ? "Unmute" : "Mute"}
+			{isMuted ? "取消静音" : "静音"}
 		</ActionMenuItem>
 	);
 }
@@ -1246,7 +1251,7 @@ function VisibilityMenuItem({
 			action="toggle-elements-visibility-selected"
 			icon={getIcon()}
 		>
-			{isHidden ? "Show" : "Hide"}
+			{isHidden ? "显示" : "隐藏"}
 		</ActionMenuItem>
 	);
 }
@@ -1269,8 +1274,8 @@ function DeleteMenuItem({
 			icon={<HugeiconsIcon icon={Delete02Icon} />}
 		>
 			{isMultipleSelected && isCurrentElementSelected
-				? `Delete ${selectedCount} elements`
-				: `Delete ${elementType === "text" ? "text" : "clip"}`}
+				? `删除 ${selectedCount} 个元素`
+				: `删除${elementType === "text" ? "文字" : "片段"}`}
 		</ActionMenuItem>
 	);
 }

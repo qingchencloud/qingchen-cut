@@ -19,6 +19,7 @@
     "generate:fonts": "npx tsx apps/web/scripts/generate-font-sprites.ts",
     "lint:web": "eslint apps/web/src --ext .ts,.tsx",
     "lint:web:fix": "eslint apps/web/src --ext .ts,.tsx --fix",
+    "check:web-zh": "bun script/check-web-chinese.ts",
     "preview:web": "turbo run preview --filter=@opencut/web",
     "qc": "bun packages/cli/src/qc.ts",
     "make:fixtures": "bun script/make-fixtures.ts",

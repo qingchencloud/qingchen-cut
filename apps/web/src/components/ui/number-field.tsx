@@ -97,8 +97,10 @@ function scrubAcrossRanges({
 	return clampScrubValue({ value: currentValue, min, max });
 }
 
-interface NumberFieldProps
-	extends Omit<ComponentProps<"input">, "size" | "type"> {
+interface NumberFieldProps extends Omit<
+	ComponentProps<"input">,
+	"size" | "type"
+> {
 	icon?: React.ReactNode;
 	suffix?: string;
 	suffixClassName?: string;
@@ -141,7 +143,9 @@ function NumberField({
 	const cumulativeDeltaRef = useRef(0);
 	const [isInputFocused, setIsInputFocused] = useState(false);
 	const [suffixLeft, setSuffixLeft] = useState(0);
-	const ghostValue = Array.isArray(value) ? value.join(", ") : String(value ?? "");
+	const ghostValue = Array.isArray(value)
+		? value.join(", ")
+		: String(value ?? "");
 
 	useLayoutEffect(() => {
 		if (!suffix) {
@@ -256,7 +260,7 @@ function NumberField({
 					<button
 						ref={iconRef}
 						type="button"
-						aria-label="Drag to adjust value"
+						aria-label="拖动调整数值"
 						disabled={disabled}
 						className="text-muted-foreground [&_svg]:size-3.5! shrink-0 select-none pl-2.5 text-sm leading-none cursor-ew-resize"
 						onMouseDown={(event) => event.preventDefault()}
@@ -304,7 +308,7 @@ function NumberField({
 					<Button
 						variant="text"
 						size="text"
-						aria-label="Reset to default"
+						aria-label="恢复默认"
 						onClick={onReset}
 					>
 						<HugeiconsIcon icon={ArrowTurnBackwardIcon} className="size-3.5!" />

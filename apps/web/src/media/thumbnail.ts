@@ -48,7 +48,7 @@ export function renderThumbnailDataUrl({
 	const context = canvas.getContext("2d");
 
 	if (!context) {
-		throw new Error("Could not get canvas context");
+		throw new Error("无法获取画布上下文");
 	}
 
 	draw({ context, width: size.width, height: size.height });

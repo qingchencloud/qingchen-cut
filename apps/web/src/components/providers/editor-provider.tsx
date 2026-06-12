@@ -61,7 +61,7 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 						});
 						router.replace(`/editor/${newProjectId}`);
 					} catch (_createErr) {
-						setError("Failed to create project");
+						setError("创建项目失败");
 						setIsLoading(false);
 					}
 				} else {
@@ -102,7 +102,7 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 			<div className="bg-background flex h-screen w-screen items-center justify-center">
 				<div className="flex flex-col items-center gap-4">
 					<Loader2 className="text-muted-foreground size-8 animate-spin" />
-					<p className="text-muted-foreground text-sm">Loading project...</p>
+					<p className="text-muted-foreground text-sm">正在加载项目...</p>
 				</div>
 			</div>
 		);
@@ -113,7 +113,7 @@ export function EditorProvider({ projectId, children }: EditorProviderProps) {
 			<div className="bg-background flex h-screen w-screen items-center justify-center">
 				<div className="flex flex-col items-center gap-4">
 					<Loader2 className="text-muted-foreground size-8 animate-spin" />
-					<p className="text-muted-foreground text-sm">Exiting project...</p>
+					<p className="text-muted-foreground text-sm">正在退出项目...</p>
 				</div>
 			</div>
 		);

@@ -63,8 +63,24 @@ function curvePath({ curve }: { curve: NormalizedCubicBezier }) {
 	const points: string[] = [];
 	for (let i = 0; i <= CURVE_SEGMENTS; i++) {
 		const progress = i / CURVE_SEGMENTS;
-		const x = toSvgX({ value: getBezierPoint({ progress, p0: 0, p1: curve[0], p2: curve[2], p3: 1 }) });
-		const y = toSvgY({ value: getBezierPoint({ progress, p0: 0, p1: curve[1], p2: curve[3], p3: 1 }) });
+		const x = toSvgX({
+			value: getBezierPoint({
+				progress,
+				p0: 0,
+				p1: curve[0],
+				p2: curve[2],
+				p3: 1,
+			}),
+		});
+		const y = toSvgY({
+			value: getBezierPoint({
+				progress,
+				p0: 0,
+				p1: curve[1],
+				p2: curve[3],
+				p3: 1,
+			}),
+		});
 		points.push(`${x},${y}`);
 	}
 	return `M${points.join("L")}`;
@@ -90,11 +106,10 @@ export function BezierGraph({
 	const isShiftPressedRef = useShiftKey();
 	const latestValueRef = useCommittedRef(value);
 
-	function getPointerPosition({
-		event,
-	}: {
-		event: PointerEvent;
-	}): { x: number; y: number } {
+	function getPointerPosition({ event }: { event: PointerEvent }): {
+		x: number;
+		y: number;
+	} {
 		const svg = svgRef.current;
 		if (!svg) return { x: 0, y: 0 };
 		const rect = svg.getBoundingClientRect();
@@ -164,7 +179,7 @@ export function BezierGraph({
 			onPointerUp={onPointerUp}
 			onPointerCancel={onPointerCancel}
 		>
-			<title>Bezier curve editor</title>
+			<title>贝塞尔曲线编辑器</title>
 			<line
 				x1={p0.x}
 				y1={p0.y}

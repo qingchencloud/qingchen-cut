@@ -302,12 +302,12 @@ export function Timeline() {
 
 	const { dragView, handleElementMouseDown, handleElementClick } =
 		useElementInteraction({
-		zoomLevel,
-		tracksContainerRef,
-		tracksScrollRef,
-		snappingEnabled,
-		onSnapPointChange: handleSnapPointChange,
-	});
+			zoomLevel,
+			tracksContainerRef,
+			tracksScrollRef,
+			snappingEnabled,
+			onSnapPointChange: handleSnapPointChange,
+		});
 	const isElementDragging = dragView.kind === "dragging";
 
 	const {
@@ -434,7 +434,7 @@ export function Timeline() {
 				"panel bg-background relative flex h-full flex-col overflow-hidden rounded-sm border"
 			}
 			{...dragProps}
-			aria-label="Timeline"
+			aria-label="时间线"
 		>
 			<TimelineToolbar
 				zoomLevel={zoomLevel}
@@ -455,9 +455,7 @@ export function Timeline() {
 					className="relative isolate flex flex-1 flex-col overflow-hidden"
 					ref={tracksContainerRef}
 				>
-					<SelectionBox
-						bounds={selectionBox?.bounds ?? null}
-					/>
+					<SelectionBox bounds={selectionBox?.bounds ?? null} />
 					<DragLine
 						dropTarget={dropTarget}
 						tracks={tracks}
@@ -780,8 +778,8 @@ function TimelineTrackRows({
 	const draggingElementIds = useMemo(
 		() =>
 			dragView.kind === "dragging"
-			? dragView.memberTimeOffsets
-			: (null as ReadonlyMap<string, MediaTime> | null),
+				? dragView.memberTimeOffsets
+				: (null as ReadonlyMap<string, MediaTime> | null),
 		[dragView],
 	);
 	const sortedTracks = useMemo(() => {
@@ -843,7 +841,7 @@ function TimelineTrackRows({
 								invokeAction("paste-copied");
 							}}
 						>
-							Paste elements
+							粘贴元素
 						</ContextMenuItem>
 						<ContextMenuItem
 							icon={<HugeiconsIcon icon={VolumeHighIcon} />}
@@ -853,8 +851,8 @@ function TimelineTrackRows({
 							}}
 						>
 							{canTrackHaveAudio(track) && track.muted
-								? "Unmute track"
-								: "Mute track"}
+								? "取消静音轨道"
+								: "静音轨道"}
 						</ContextMenuItem>
 						<ContextMenuItem
 							icon={<HugeiconsIcon icon={ViewIcon} />}
@@ -864,8 +862,8 @@ function TimelineTrackRows({
 							}}
 						>
 							{canTrackBeHidden(track) && track.hidden
-								? "Show track"
-								: "Hide track"}
+								? "显示轨道"
+								: "隐藏轨道"}
 						</ContextMenuItem>
 						{track.id !== mainTrackId && (
 							<ContextMenuItem
@@ -876,7 +874,7 @@ function TimelineTrackRows({
 								}}
 								variant="destructive"
 							>
-								Delete track
+								删除轨道
 							</ContextMenuItem>
 						)}
 					</ContextMenuContent>

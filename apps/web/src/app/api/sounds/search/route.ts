@@ -151,7 +151,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const { limited } = await checkRateLimit({ request });
 		if (limited) {
-			return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+			return NextResponse.json({ error: "请求过于频繁" }, { status: 429 });
 		}
 
 		const { searchParams } = new URL(request.url);
@@ -168,7 +168,7 @@ export async function GET(request: NextRequest) {
 		if (!validationResult.success) {
 			return NextResponse.json(
 				{
-					error: "Invalid parameters",
+					error: "参数无效",
 					details: validationResult.error.flatten().fieldErrors,
 				},
 				{ status: 400 },
@@ -188,9 +188,8 @@ export async function GET(request: NextRequest) {
 		if (type === "songs") {
 			return NextResponse.json(
 				{
-					error: "Songs are not available yet",
-					message:
-						"Song search functionality is coming soon. Try searching for sound effects instead.",
+					error: "歌曲暂不可用",
+					message: "歌曲搜索功能即将推出，请先搜索音效。",
 				},
 				{ status: 501 },
 			);
@@ -221,7 +220,7 @@ export async function GET(request: NextRequest) {
 			const errorText = await response.text();
 			console.error("Freesound API error:", response.status, errorText);
 			return NextResponse.json(
-				{ error: "Failed to search sounds" },
+				{ error: "搜索音效失败" },
 				{ status: response.status },
 			);
 		}
@@ -235,7 +234,7 @@ export async function GET(request: NextRequest) {
 				freesoundValidation.error,
 			);
 			return NextResponse.json(
-				{ error: "Invalid response from Freesound API" },
+				{ error: "Freesound API 响应无效" },
 				{ status: 502 },
 			);
 		}
@@ -264,7 +263,7 @@ export async function GET(request: NextRequest) {
 				responseValidation.error,
 			);
 			return NextResponse.json(
-				{ error: "Internal response formatting error" },
+				{ error: "内部响应格式化错误" },
 				{ status: 500 },
 			);
 		}
@@ -272,9 +271,6 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json(responseValidation.data);
 	} catch (error) {
 		console.error("Error searching sounds:", error);
-		return NextResponse.json(
-			{ error: "Internal server error" },
-			{ status: 500 },
-		);
+		return NextResponse.json({ error: "服务器内部错误" }, { status: 500 });
 	}
 }

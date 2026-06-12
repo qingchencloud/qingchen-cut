@@ -7,11 +7,7 @@ import {
 	type TimeCodeFormat,
 } from "opencut-wasm";
 import { cn } from "@/utils/ui";
-import {
-	parseMediaTimecode,
-	snapSeekMediaTime,
-	type MediaTime,
-} from "@/wasm";
+import { parseMediaTimecode, snapSeekMediaTime, type MediaTime } from "@/wasm";
 
 interface EditableTimecodeProps {
 	time: MediaTime;
@@ -153,7 +149,7 @@ export function EditableTimecode({
 				disabled && "cursor-default hover:bg-transparent",
 				className,
 			)}
-			title={disabled ? undefined : "Click to edit time"}
+			title={disabled ? undefined : "点击编辑时间"}
 		>
 			{formattedTime}
 		</button>

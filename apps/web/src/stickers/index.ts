@@ -1,6 +1,4 @@
-import {
-	STICKER_CATEGORIES,
-} from "@/stickers/categories";
+import { STICKER_CATEGORIES } from "@/stickers/categories";
 import { STICKER_INTRINSIC_SIZE_FALLBACK } from "@/stickers/intrinsic-size";
 import type { StickerCategory } from "@/stickers/types";
 import { stickersRegistry } from "./registry";
@@ -243,7 +241,7 @@ export async function browseAll({
 	if (recentItems.length > 0) {
 		sections.push({
 			id: "recent",
-			title: "Recently used",
+			title: "最近使用",
 			items: recentItems.slice(0, limit),
 			hasMore: recentItems.length > limit,
 			layout: "row",
@@ -262,17 +260,17 @@ export async function browseAll({
 			}
 
 			const category = provider.id as StickerCategory;
-		return {
-			...firstSection,
-			id: category,
-			title: STICKER_CATEGORIES[category] ?? firstSection.title,
-			layout: "row" as const,
-			action: {
-				type: "see-all" as const,
-				category,
-				sectionId: firstSection.id,
-			},
-		};
+			return {
+				...firstSection,
+				id: category,
+				title: STICKER_CATEGORIES[category] ?? firstSection.title,
+				layout: "row" as const,
+				action: {
+					type: "see-all" as const,
+					category,
+					sectionId: firstSection.id,
+				},
+			};
 		}),
 	);
 

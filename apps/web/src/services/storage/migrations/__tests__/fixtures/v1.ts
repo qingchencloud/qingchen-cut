@@ -13,7 +13,7 @@ export const v1Project = {
 	scenes: [
 		{
 			id: "scene-main",
-			name: "Main scene",
+			name: "主场景",
 			isMain: true,
 			tracks: [],
 			bookmarks: [],
@@ -48,7 +48,7 @@ export const v1ProjectWithMultipleScenes = {
 		},
 		{
 			id: "scene-2",
-			name: "Content",
+			name: "内容",
 			isMain: false,
 			tracks: [],
 			bookmarks: [],

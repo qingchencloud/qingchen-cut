@@ -48,9 +48,7 @@ export function StorageProvider({ children }: StorageProviderProps) {
 				const hasSupport = storageService.isFullySupported();
 
 				if (!hasSupport) {
-					toast.warning(
-						"Storage not fully supported. Some features may not work.",
-					);
+					toast.warning("存储能力支持不完整，部分功能可能无法使用。");
 				}
 
 				await editor.project.loadAllProjects();

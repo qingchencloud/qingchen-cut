@@ -123,7 +123,7 @@ export function SectionHeader({
 					<Button
 						variant="ghost"
 						size="icon"
-						aria-label={isOpen ? "Collapse section" : "Expand section"}
+						aria-label={isOpen ? "折叠分区" : "展开分区"}
 						onClick={handleClick}
 					>
 						{chevronIcon}

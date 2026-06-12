@@ -57,7 +57,7 @@ export function ShortcutsDialog({
 				});
 				if (conflict) {
 					toast.error(
-						`Key "${keyString}" is already bound to "${conflict.existingAction}"`,
+						`快捷键“${keyString}”已绑定到“${conflict.existingAction}”`,
 					);
 					setRecordingShortcut(null);
 					return;
@@ -110,7 +110,7 @@ export function ShortcutsDialog({
 		<Dialog open={isOpen} onOpenChange={onOpenChange}>
 			<DialogContent className="flex max-h-[80vh] max-w-2xl flex-col p-0">
 				<DialogHeader>
-					<DialogTitle>Keyboard shortcuts</DialogTitle>
+					<DialogTitle>键盘快捷键</DialogTitle>
 				</DialogHeader>
 
 				<DialogBody className="scrollbar-thin grow overflow-y-auto">
@@ -140,7 +140,7 @@ export function ShortcutsDialog({
 				</DialogBody>
 				<DialogFooter>
 					<Button variant="destructive" onClick={resetToDefaults}>
-						Reset to default
+						恢复默认
 					</Button>
 				</DialogFooter>
 			</DialogContent>
@@ -193,7 +193,7 @@ function ShortcutItem({
 							})}
 						</div>
 						{index < displayKeys.length - 1 && (
-							<span className="text-muted-foreground text-xs">or</span>
+							<span className="text-muted-foreground text-xs">或</span>
 						)}
 					</div>
 				))}
@@ -222,9 +222,7 @@ function EditableShortcutKey({
 			variant="outline"
 			size="sm"
 			onClick={handleClick}
-			title={
-				isRecording ? "Press any key combination..." : "Click to edit shortcut"
-			}
+			title={isRecording ? "按任意快捷键组合..." : "点击编辑快捷键"}
 		>
 			{children}
 		</Button>

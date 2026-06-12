@@ -32,7 +32,7 @@ describe("V19 to V20 Migration", () => {
 							{
 								id: "track-video",
 								type: "video",
-								name: "Video",
+								name: "视频",
 								isMain: true,
 								muted: false,
 								hidden: false,
@@ -58,7 +58,7 @@ describe("V19 to V20 Migration", () => {
 							{
 								id: "track-audio",
 								type: "audio",
-								name: "Audio",
+								name: "音频",
 								muted: false,
 								elements: [
 									{
@@ -66,7 +66,7 @@ describe("V19 to V20 Migration", () => {
 										type: "audio",
 										sourceType: "upload",
 										mediaId: "media-audio-1",
-										name: "Audio",
+										name: "音频",
 										duration: 5,
 										startTime: 0,
 										trimStart: 0,

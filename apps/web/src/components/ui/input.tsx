@@ -12,7 +12,8 @@ const inputVariants = cva(
 	{
 		variants: {
 			variant: {
-				default: "selection:bg-primary selection:text-primary-foreground focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20",
+				default:
+					"selection:bg-primary selection:text-primary-foreground focus-visible:border-primary/50 focus-visible:ring-2 focus-visible:ring-primary/20",
 				outline: "bg-background",
 				destructive:
 					"selection:bg-destructive selection:text-destructive-foreground focus-visible:border-destructive focus-visible:ring-destructive/10",
@@ -32,7 +33,8 @@ const inputVariants = cva(
 );
 
 interface InputProps
-	extends Omit<ComponentProps<"input">, "size">,
+	extends
+		Omit<ComponentProps<"input">, "size">,
 		VariantProps<typeof inputVariants> {
 	showPassword?: boolean;
 	onShowPasswordChange?: (show: boolean) => void;
@@ -111,7 +113,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 							onClear?.();
 						}}
 						className="text-muted-foreground absolute top-0 right-0 h-full px-3 !opacity-100"
-						aria-label="Clear input"
+						aria-label="清空输入"
 					>
 						<X className="!size-[0.85]" />
 					</Button>
@@ -125,7 +127,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 							"text-muted-foreground hover:text-foreground absolute top-0 h-full px-3",
 							showClear ? "right-10" : "right-0",
 						)}
-						aria-label={showPassword ? "Hide password" : "Show password"}
+						aria-label={showPassword ? "隐藏密码" : "显示密码"}
 					>
 						{showPassword ? (
 							<Eye className="size-4" />

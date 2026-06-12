@@ -18,7 +18,7 @@ export const v3Project = {
 	scenes: [
 		{
 			id: "scene-main",
-			name: "Main scene",
+			name: "主场景",
 			isMain: true,
 			tracks: [
 				{

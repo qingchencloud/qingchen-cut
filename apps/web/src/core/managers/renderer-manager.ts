@@ -53,7 +53,7 @@ export class RendererManager {
 		if (typeof ClipboardItem === "undefined" || !navigator.clipboard?.write) {
 			return {
 				success: false,
-				error: "Clipboard image copy is not supported in this browser",
+				error: "当前浏览器不支持复制截图到剪贴板",
 			};
 		}
 
@@ -84,12 +84,12 @@ export class RendererManager {
 			const activeProject = this.editor.project.getActive();
 
 			if (!renderTree || !activeProject) {
-				return { success: false, error: "No project or scene to capture" };
+				return { success: false, error: "没有可截图的项目或场景" };
 			}
 
 			const duration = this.editor.timeline.getTotalDuration();
 			if (duration === 0) {
-				return { success: false, error: "Project is empty" };
+				return { success: false, error: "项目为空" };
 			}
 
 			const { canvasSize, fps } = activeProject.settings;
@@ -119,10 +119,13 @@ export class RendererManager {
 			});
 
 			if (!blob) {
-				return { success: false, error: "Failed to create image" };
+				return { success: false, error: "创建图片失败" };
 			}
 
-			const timecode = formatTimecode({ time: renderTime, rate: fps })!.replace(/:/g, "-");
+			const timecode = formatTimecode({ time: renderTime, rate: fps })!.replace(
+				/:/g,
+				"-",
+			);
 			const safeName =
 				activeProject.metadata.name.replace(/[<>:"/\\|?*]/g, "-").trim() ||
 				"snapshot";
@@ -155,12 +158,12 @@ export class RendererManager {
 			const activeProject = this.editor.project.getActive();
 
 			if (!activeProject) {
-				return { success: false, error: "No active project" };
+				return { success: false, error: "没有活动项目" };
 			}
 
 			const duration = this.editor.timeline.getTotalDuration();
 			if (duration === 0) {
-				return { success: false, error: "Project is empty" };
+				return { success: false, error: "项目为空" };
 			}
 
 			const exportFps = fps ?? activeProject.settings.fps;
@@ -220,7 +223,7 @@ export class RendererManager {
 				}
 
 				if (!buffer) {
-					return { success: false, error: "Export failed to produce buffer" };
+					return { success: false, error: "导出未生成数据" };
 				}
 
 				return {

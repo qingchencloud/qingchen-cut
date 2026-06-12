@@ -23,7 +23,7 @@ describe("V15 to V16 Migration", () => {
 				scenes: [
 					{
 						id: "scene-main",
-						name: "Main scene",
+						name: "主场景",
 						isMain: true,
 						tracks: [
 							{

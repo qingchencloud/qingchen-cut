@@ -163,7 +163,7 @@ describe("V1 to V2 Migration", () => {
 				scenes: [
 					{
 						id: "scene-main",
-						name: "Main scene",
+						name: "主场景",
 						isMain: true,
 						tracks: [
 							{
@@ -226,7 +226,7 @@ describe("V1 to V2 Migration", () => {
 				scenes: [
 					{
 						id: "scene-main",
-						name: "Main scene",
+						name: "主场景",
 						isMain: true,
 						tracks: [],
 						bookmarks: [],
@@ -257,7 +257,7 @@ describe("V1 to V2 Migration", () => {
 						{
 							id: "legacy-text-track",
 							type: "text",
-							name: "Text",
+							name: "文字",
 							elements: [
 								{
 									id: "text-element-1",

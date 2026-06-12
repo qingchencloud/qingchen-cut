@@ -152,9 +152,9 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 			set({ savedSounds: savedSoundsData.sounds });
 		} catch (error) {
 			const errorMessage =
-				error instanceof Error ? error.message : "Failed to save sound";
+				error instanceof Error ? error.message : "保存音效失败";
 			set({ savedSoundsError: errorMessage });
-			toast.error("Failed to save sound");
+			toast.error("保存音效失败");
 			console.error("Failed to save sound:", error);
 		}
 	},
@@ -168,9 +168,9 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 			}));
 		} catch (error) {
 			const errorMessage =
-				error instanceof Error ? error.message : "Failed to remove sound";
+				error instanceof Error ? error.message : "移除音效失败";
 			set({ savedSoundsError: errorMessage });
-			toast.error("Failed to remove sound");
+			toast.error("移除音效失败");
 			console.error("Failed to remove sound:", error);
 		}
 	},
@@ -199,9 +199,9 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 			});
 		} catch (error) {
 			const errorMessage =
-				error instanceof Error ? error.message : "Failed to clear saved sounds";
+				error instanceof Error ? error.message : "清空已保存音效失败";
 			set({ savedSoundsError: errorMessage });
-			toast.error("Failed to clear saved sounds");
+			toast.error("清空已保存音效失败");
 			console.error("Failed to clear saved sounds:", error);
 		}
 	},
@@ -209,7 +209,7 @@ export const useSoundsStore = create<SoundsStore>((set, get) => ({
 	addSoundToTimeline: async ({ sound }) => {
 		const audioUrl = sound.previewUrl;
 		if (!audioUrl) {
-			toast.error("Sound file not available");
+			toast.error("音效文件不可用");
 			return false;
 		}
 

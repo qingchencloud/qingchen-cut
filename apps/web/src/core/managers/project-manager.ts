@@ -15,7 +15,10 @@ import { UpdateProjectSettingsCommand } from "@/commands/project";
 import { DEFAULT_BACKGROUND_COLOR } from "@/background/color";
 import { DEFAULT_CANVAS_SIZE } from "@/canvas/sizes";
 import { DEFAULT_FPS } from "@/fps/defaults";
-import { buildDefaultScene, getProjectDurationFromScenes } from "@/timeline/scenes";
+import {
+	buildDefaultScene,
+	getProjectDurationFromScenes,
+} from "@/timeline/scenes";
 import { buildScene } from "@/services/renderer/scene-builder";
 import { CanvasRenderer } from "@/services/renderer/canvas-renderer";
 import {
@@ -80,7 +83,7 @@ export class ProjectManager {
 	}
 
 	async createNewProject({ name }: { name: string }): Promise<string> {
-		const mainScene = buildDefaultScene({ name: "Main scene", isMain: true });
+		const mainScene = buildDefaultScene({ name: "主场景", isMain: true });
 		const newProject: TProject = {
 			metadata: {
 				id: generateUUID(),
@@ -120,7 +123,7 @@ export class ProjectManager {
 
 			return newProject.metadata.id;
 		} catch (error) {
-			toast.error("Failed to save new project");
+			toast.error("保存新项目失败");
 			throw error;
 		}
 	}
@@ -325,8 +328,8 @@ export class ProjectManager {
 		try {
 			const result = await storageService.loadProject({ id });
 			if (!result) {
-				toast.error("Project not found", {
-					description: "Please try again",
+				toast.error("未找到项目", {
+					description: "请重试",
 				});
 				return;
 			}
@@ -350,9 +353,8 @@ export class ProjectManager {
 			this.updateMetadata(updatedProject);
 		} catch (error) {
 			console.error("Failed to rename project:", error);
-			toast.error("Failed to rename project", {
-				description:
-					error instanceof Error ? error.message : "Please try again",
+			toast.error("重命名项目失败", {
+				description: error instanceof Error ? error.message : "请重试",
 			});
 		}
 	}
@@ -382,13 +384,11 @@ export class ProjectManager {
 
 			if (missingProjectIds.length > 0) {
 				toast.error(
-					missingProjectIds.length === 1
-						? "Project not found"
-						: "Projects not found",
+					missingProjectIds.length === 1 ? "未找到项目" : "Projects not found",
 					{
 						description:
 							missingProjectIds.length === 1
-								? "Please try again"
+								? "请重试"
 								: "Some projects could not be found",
 					},
 				);
@@ -475,9 +475,8 @@ export class ProjectManager {
 			return duplicationPlans.map((plan) => plan.newProjectId);
 		} catch (error) {
 			console.error("Failed to duplicate projects:", error);
-			toast.error("Failed to duplicate projects", {
-				description:
-					error instanceof Error ? error.message : "Please try again",
+			toast.error("复制项目失败", {
+				description: error instanceof Error ? error.message : "请重试",
 			});
 			throw error;
 		}
@@ -593,7 +592,7 @@ export class ProjectManager {
 
 	getActive(): TProject {
 		if (!this.active) {
-			throw new Error("No active project");
+			throw new Error("没有活动项目");
 		}
 		return this.active;
 	}

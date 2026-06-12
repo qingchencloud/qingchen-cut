@@ -77,7 +77,7 @@ function useFeedback() {
 			setEntries(next);
 			writeHistory({ entries: next });
 			onSuccess();
-			toast.success("Feedback sent");
+			toast.success("反馈已发送");
 		} catch (error) {
 			toast.error(
 				error instanceof Error ? error.message : "Failed to send feedback",
@@ -97,7 +97,7 @@ export function FeedbackPopover() {
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
 				<Button variant="outline" className="h-8">
-					Send feedback
+					发送反馈
 				</Button>
 			</PopoverTrigger>
 			<PopoverContent align="end" className="w-80 p-0">
@@ -107,7 +107,7 @@ export function FeedbackPopover() {
 	);
 }
 
-type View = "compose" | "history";
+type View = "compose" | "历史";
 
 function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 	const { entries, isSubmitting, submit } = useFeedback();
@@ -128,7 +128,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 		});
 	}
 
-	if (view === "history") {
+	if (view === "历史") {
 		return (
 			<div className="flex flex-col">
 				<div
@@ -148,7 +148,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 						onClick={() => setView("compose")}
 						className="text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
 					>
-						← Back
+						← 返回
 					</button>
 				</div>
 			</div>
@@ -158,7 +158,10 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 	return (
 		<div className="flex flex-col">
 			<Form persistKey={PERSIST_KEY} {...form}>
-				<form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col">
+				<form
+					onSubmit={form.handleSubmit(handleSubmit)}
+					className="flex flex-col"
+				>
 					<FormField
 						control={form.control}
 						name="message"
@@ -166,7 +169,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 							<FormItem>
 								<FormControl>
 									<Textarea
-										placeholder="Thoughts, bugs, ideas..."
+										placeholder="想法、问题、建议..."
 										className="min-h-[7rem] text-sm p-3 bg-background shadow-none border-none! resize-none"
 										{...field}
 									/>
@@ -178,7 +181,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 						{entries.length > 0 ? (
 							<button
 								type="button"
-								onClick={() => setView("history")}
+								onClick={() => setView("历史")}
 								className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-muted-foreground transition-colors"
 							>
 								<ClockIcon className="size-3" />
@@ -195,7 +198,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 									size="sm"
 									onClick={onClose}
 								>
-									Cancel
+									取消
 								</Button>
 							)}
 							<Button
@@ -203,7 +206,7 @@ function FeedbackPopoverContent({ onClose }: { onClose: () => void }) {
 								size="sm"
 								disabled={isSubmitting || !form.watch("message").trim()}
 							>
-								{isSubmitting ? <Spinner /> : "Send"}
+								{isSubmitting ? <Spinner /> : "发送"}
 							</Button>
 						</div>
 					</div>

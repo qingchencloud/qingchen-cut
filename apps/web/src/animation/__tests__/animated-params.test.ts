@@ -12,7 +12,7 @@ describe("animated params", () => {
 			coerceParamValue({
 				param: {
 					key: "intensity",
-					label: "Intensity",
+					label: "强度",
 					type: "number",
 					default: 0,
 					min: 0,
@@ -27,7 +27,7 @@ describe("animated params", () => {
 			coerceParamValue({
 				param: {
 					key: "intensity",
-					label: "Intensity",
+					label: "强度",
 					type: "number",
 					default: 0,
 					min: 0,
@@ -42,7 +42,7 @@ describe("animated params", () => {
 	test("rejects NaN and non-number values for number params", () => {
 		const param = {
 			key: "intensity",
-			label: "Intensity",
+			label: "强度",
 			type: "number" as const,
 			default: 0,
 			min: 0,
@@ -77,8 +77,8 @@ describe("animated params", () => {
 			type: "select" as const,
 			default: "normal",
 			options: [
-				{ value: "normal", label: "Normal" },
-				{ value: "multiply", label: "Multiply" },
+				{ value: "normal", label: "常规" },
+				{ value: "multiply", label: "正片叠底" },
 			],
 		};
 		expect(coerceParamValue({ param, value: "normal" })).toBe("normal");
@@ -94,8 +94,8 @@ describe("animated params", () => {
 					type: "select",
 					default: "normal",
 					options: [
-						{ value: "normal", label: "Normal" },
-						{ value: "multiply", label: "Multiply" },
+						{ value: "normal", label: "常规" },
+						{ value: "multiply", label: "正片叠底" },
 					],
 				},
 				value: "screen",
@@ -109,7 +109,7 @@ describe("animated params", () => {
 			label: "Blend",
 			type: "select" as const,
 			default: "normal",
-			options: [{ value: "normal", label: "Normal" }],
+			options: [{ value: "normal", label: "常规" }],
 		};
 		expect(coerceParamValue({ param, value: 42 })).toBeNull();
 		expect(coerceParamValue({ param, value: null })).toBeNull();
@@ -132,7 +132,7 @@ describe("animated params", () => {
 	test("color params accept strings and reject other types", () => {
 		const param = {
 			key: "fill",
-			label: "Fill",
+			label: "填充",
 			type: "color" as const,
 			default: "#ffffff",
 		};
@@ -218,7 +218,7 @@ describe("animated params", () => {
 			getParamNumericRange({
 				param: {
 					key: "intensity",
-					label: "Intensity",
+					label: "强度",
 					type: "number",
 					default: 0.5,
 					min: 0,

@@ -30,7 +30,7 @@ function formatKey({ key }: { key: string }): string {
 		.replace("home", "Home")
 		.replace("enter", "Enter")
 		.replace("end", "End")
-		.replace("delete", "Delete")
+		.replace("delete", "删除")
 		.replace("backspace", "Backspace")
 		.replace("-", "+");
 }

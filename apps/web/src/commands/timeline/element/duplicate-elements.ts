@@ -125,7 +125,7 @@ function buildDuplicateElement({
 	return {
 		...element,
 		id,
-		name: `${element.name} (copy)`,
+		name: `${element.name}（副本）`,
 		startTime,
 		animations: cloneAnimations({
 			animations: element.animations,

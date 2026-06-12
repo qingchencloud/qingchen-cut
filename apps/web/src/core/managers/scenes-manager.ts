@@ -38,7 +38,7 @@ export class ScenesManager {
 		isMain: boolean;
 	}): Promise<string> {
 		if (!this.editor.project.getActive()) {
-			throw new Error("No active project");
+			throw new Error("没有活动项目");
 		}
 
 		const command = new CreateSceneCommand({ name, isMain });
@@ -59,7 +59,7 @@ export class ScenesManager {
 		}
 
 		if (!this.editor.project.getActive()) {
-			throw new Error("No active project");
+			throw new Error("没有活动项目");
 		}
 
 		const command = new DeleteSceneCommand(sceneId);
@@ -74,7 +74,7 @@ export class ScenesManager {
 		name: string;
 	}): Promise<void> {
 		if (!this.editor.project.getActive()) {
-			throw new Error("No active project");
+			throw new Error("没有活动项目");
 		}
 
 		const command = new RenameSceneCommand({

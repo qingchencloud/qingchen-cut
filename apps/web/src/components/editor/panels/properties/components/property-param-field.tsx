@@ -50,7 +50,7 @@ export function PropertyParamField({
 					<KeyframeToggle
 						isActive={keyframe.isActive}
 						isDisabled={keyframe.isDisabled}
-						title={`Toggle ${param.label.toLowerCase()} keyframe`}
+						title={`切换${param.label.toLowerCase()}关键帧`}
 						onToggle={keyframe.onToggle}
 					/>
 				) : undefined
@@ -180,9 +180,7 @@ function NumberParamField({
 		);
 
 	const previewFromDisplay = (displayVal: number) => {
-		const clamped = clampDisplayValue(
-			snapToStep({ value: displayVal, step }),
-		);
+		const clamped = clampDisplayValue(snapToStep({ value: displayVal, step }));
 		onPreview(clamped / displayMultiplier);
 	};
 

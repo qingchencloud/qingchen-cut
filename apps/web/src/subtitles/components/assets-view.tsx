@@ -142,7 +142,7 @@ export function Captions() {
 			const captionChunks = buildCaptionChunks({ segments: result.segments });
 
 			if (!insertCaptions({ captions: captionChunks })) {
-				dispatch({ type: "fail", error: "No captions were generated" });
+				dispatch({ type: "fail", error: "未生成字幕" });
 				return;
 			}
 
@@ -175,7 +175,7 @@ export function Captions() {
 			if (result.captions.length === 0) {
 				dispatch({
 					type: "fail",
-					error: "No valid subtitle cues were found in the subtitle file",
+					error: "字幕文件中未找到有效字幕片段",
 				});
 				return;
 			}
@@ -183,7 +183,7 @@ export function Captions() {
 			dispatch({ type: "update_step", step: "Importing subtitles..." });
 
 			if (!insertCaptions({ captions: result.captions })) {
-				dispatch({ type: "fail", error: "No captions were generated" });
+				dispatch({ type: "fail", error: "未生成字幕" });
 				return;
 			}
 
@@ -239,7 +239,7 @@ export function Captions() {
 
 	return (
 		<PanelView
-			title="Captions"
+			title="字幕"
 			contentClassName="px-0 flex flex-col h-full"
 			actions={
 				<TooltipProvider>
@@ -268,7 +268,7 @@ export function Captions() {
 							className="items-center justify-center gap-1.5"
 						>
 							<HugeiconsIcon icon={CloudUploadIcon} />
-							Import
+							导入
 						</Button>
 					</div>
 				</TooltipProvider>
@@ -289,16 +289,16 @@ export function Captions() {
 			>
 				<SectionContent className="flex flex-col gap-4 h-full pt-1">
 					<SectionFields>
-						<SectionField label="Language">
+						<SectionField label="语言">
 							<Select
 								value={selectedLanguage}
 								onValueChange={(value) => handleLanguageChange({ value })}
 							>
 								<SelectTrigger>
-									<SelectValue placeholder="Select a language" />
+									<SelectValue placeholder="选择语言" />
 								</SelectTrigger>
 								<SelectContent>
-									<SelectItem value="auto">Auto detect</SelectItem>
+									<SelectItem value="auto">自动检测</SelectItem>
 									{TRANSCRIPTION_LANGUAGES.map((language) => (
 										<SelectItem key={language.code} value={language.code}>
 											{language.name}
@@ -316,7 +316,7 @@ export function Captions() {
 						disabled={isProcessing || activeDiagnostics.length > 0}
 					>
 						{isProcessing && <Spinner className="mr-1" />}
-						{isProcessing ? processing.step : "Generate transcript"}
+						{isProcessing ? processing.step : "生成转写"}
 					</Button>
 					{error && (
 						<div className="bg-destructive/10 border-destructive/20 rounded-md border p-3">

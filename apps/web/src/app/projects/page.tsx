@@ -242,9 +242,7 @@ function ProjectsToolbar({ projectIds }: { projectIds: string[] }) {
 							handleSelectAll({ checked: checked === true })
 						}
 					/>
-					<span className="text-muted-foreground hidden md:block">
-						全选
-					</span>
+					<span className="text-muted-foreground hidden md:block">全选</span>
 				</Label>
 
 				<div className="h-4 w-px bg-border/50" />
@@ -960,9 +958,8 @@ function EmptyState() {
 			});
 			router.push(`/editor/${projectId}`);
 		} catch (error) {
-			toast.error("Failed to create project", {
-				description:
-					error instanceof Error ? error.message : "Please try again",
+			toast.error("创建项目失败", {
+				description: error instanceof Error ? error.message : "请重试",
 			});
 		}
 	};

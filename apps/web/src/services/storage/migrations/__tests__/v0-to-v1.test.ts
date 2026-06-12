@@ -37,7 +37,7 @@ describe("V0 to V1 Migration", () => {
 			const mainScene = scenes[0];
 
 			expect(mainScene.isMain).toBe(true);
-			expect(mainScene.name).toBe("Main scene");
+			expect(mainScene.name).toBe("主场景");
 			expect(typeof mainScene.id).toBe("string");
 			expect(Array.isArray(mainScene.tracks)).toBe(true);
 			expect(Array.isArray(mainScene.bookmarks)).toBe(true);

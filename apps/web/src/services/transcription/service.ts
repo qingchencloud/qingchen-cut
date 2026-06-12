@@ -45,7 +45,7 @@ class TranscriptionService {
 						onProgress?.({
 							status: "transcribing",
 							progress: response.progress,
-							message: "Transcribing audio...",
+							message: "正在转写音频...",
 						});
 						break;
 
@@ -129,7 +129,7 @@ class TranscriptionService {
 						onProgress?.({
 							status: "loading-model",
 							progress: response.progress,
-							message: `Loading ${model.name} model...`,
+							message: `正在加载 ${model.name} 模型...`,
 						});
 						break;
 

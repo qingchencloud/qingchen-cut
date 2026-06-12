@@ -1,7 +1,4 @@
-import type {
-	AnimationPath,
-	ElementAnimations,
-} from "@/animation/types";
+import type { AnimationPath, ElementAnimations } from "@/animation/types";
 import type { TimelineTrack } from "@/timeline";
 import { getElementKeyframes } from "@/animation";
 import { KEYFRAME_LANE_HEIGHT_PX } from "./layout";
@@ -16,7 +13,9 @@ interface PropertyGroupDefinition {
 }
 
 const PROPERTY_GROUPS: PropertyGroupDefinition[] = [
-	{ matchesPath: (path) => path.startsWith("transform.") || path === "opacity" },
+	{
+		matchesPath: (path) => path.startsWith("transform.") || path === "opacity",
+	},
 	{ matchesPath: (path) => path === "volume" || path === "color" },
 	{ matchesPath: (path) => path.startsWith("background.") },
 	{ matchesPath: (path) => path.startsWith("params.") },
@@ -24,14 +23,14 @@ const PROPERTY_GROUPS: PropertyGroupDefinition[] = [
 ];
 
 const PROPERTY_LABELS: Partial<Record<string, string>> = {
-	"transform.positionX": "Position X",
-	"transform.positionY": "Position Y",
-	"transform.scaleX": "Scale X",
-	"transform.scaleY": "Scale Y",
-	"transform.rotate": "Rotation",
-	opacity: "Opacity",
-	volume: "Volume",
-	color: "Color",
+	"transform.positionX": "位置 X",
+	"transform.positionY": "位置 Y",
+	"transform.scaleX": "缩放 X",
+	"transform.scaleY": "缩放 Y",
+	"transform.rotate": "旋转",
+	opacity: "不透明度",
+	volume: "音量",
+	color: "颜色",
 	"background.color": "BG Color",
 	"background.paddingX": "BG Pad X",
 	"background.paddingY": "BG Pad Y",
@@ -62,9 +61,7 @@ export function getExpandedRows({
 	const rows: ExpandedRow[] = [];
 
 	for (const group of PROPERTY_GROUPS) {
-		const groupPaths = propertyPaths.filter((path) =>
-			group.matchesPath(path),
-		);
+		const groupPaths = propertyPaths.filter((path) => group.matchesPath(path));
 		for (const path of groupPaths) {
 			rows.push({ propertyPath: path, label: getPropertyLabel(path) });
 		}

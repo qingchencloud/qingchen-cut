@@ -36,7 +36,7 @@ export function transformProjectV0ToV1({
 
 	const mainScene: V1Scene = {
 		id: sceneId,
-		name: "Main scene",
+		name: "主场景",
 		isMain: true,
 		tracks: [],
 		bookmarks: [],

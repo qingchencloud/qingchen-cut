@@ -41,7 +41,7 @@ export class MediaManager {
 			this.notify();
 
 			if (storageService.isQuotaExceededError({ error })) {
-				toast.error("Not enough browser storage", {
+				toast.error("浏览器存储空间不足", {
 					description: error instanceof Error ? error.message : undefined,
 				});
 			}
@@ -73,11 +73,12 @@ export class MediaManager {
 						assetId: uniqueIds[0],
 					})
 				: new BatchCommand(
-						uniqueIds.map((id) =>
-							new RemoveMediaAssetCommand({
-								projectId,
-								assetId: id,
-							}),
+						uniqueIds.map(
+							(id) =>
+								new RemoveMediaAssetCommand({
+									projectId,
+									assetId: id,
+								}),
 						),
 					);
 
@@ -95,7 +96,7 @@ export class MediaManager {
 			this.assets = mediaAssets;
 			this.notify();
 		} catch (error) {
-			console.error("Failed to load media assets:", error);
+			console.error("加载媒体素材失败：", error);
 		} finally {
 			this.isLoading = false;
 			this.notify();
@@ -125,7 +126,7 @@ export class MediaManager {
 				),
 			);
 		} catch (error) {
-			console.error("Failed to clear media assets from storage:", error);
+			console.error("从存储中清理媒体素材失败：", error);
 		}
 	}
 

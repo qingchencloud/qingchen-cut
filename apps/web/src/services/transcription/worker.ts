@@ -126,7 +126,7 @@ async function handleTranscribe({
 	if (!transcriber) {
 		self.postMessage({
 			type: "transcribe-error",
-			error: "Model not initialized",
+			error: "模型未初始化",
 		} satisfies WorkerResponse);
 		return;
 	}

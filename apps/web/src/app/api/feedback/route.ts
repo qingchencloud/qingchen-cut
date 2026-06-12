@@ -13,7 +13,7 @@ const submitSchema = z.object({
 export async function POST(request: NextRequest) {
 	const { limited } = await checkRateLimit({ request });
 	if (limited) {
-		return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+		return NextResponse.json({ error: "请求过于频繁" }, { status: 429 });
 	}
 
 	const body = await request.json();
@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
 
 	if (!result.success) {
 		return NextResponse.json(
-			{ error: "Invalid input", details: result.error.flatten().fieldErrors },
+			{ error: "输入无效", details: result.error.flatten().fieldErrors },
 			{ status: 400 },
 		);
 	}

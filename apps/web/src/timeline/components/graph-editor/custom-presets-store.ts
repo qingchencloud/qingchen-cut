@@ -86,7 +86,7 @@ export function savePreset({ value }: { value: NormalizedCubicBezier }): void {
 			...current,
 			{
 				id: generateUUID(),
-				label: `Custom ${current.length + 1}`,
+				label: `自定义 ${current.length + 1}`,
 				value,
 				isCustom: true,
 			},
@@ -96,6 +96,8 @@ export function savePreset({ value }: { value: NormalizedCubicBezier }): void {
 }
 
 export function removePreset({ id }: { id: string }): void {
-	writeToStorage({ presets: getSnapshot().filter((preset) => preset.id !== id) });
+	writeToStorage({
+		presets: getSnapshot().filter((preset) => preset.id !== id),
+	});
 	notify();
 }

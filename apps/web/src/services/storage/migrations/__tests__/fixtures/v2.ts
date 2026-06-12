@@ -17,7 +17,7 @@ export const v2Project = {
 	scenes: [
 		{
 			id: "scene-main",
-			name: "Main scene",
+			name: "主场景",
 			isMain: true,
 			tracks: [
 				{
@@ -77,7 +77,7 @@ export const v2ProjectWithBlurBackground = {
 	scenes: [
 		{
 			id: "scene-1",
-			name: "Main scene",
+			name: "主场景",
 			isMain: true,
 			tracks: [
 				{

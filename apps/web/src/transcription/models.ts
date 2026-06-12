@@ -1,32 +1,29 @@
-import type {
-	TranscriptionModel,
-	TranscriptionModelId,
-} from "./types";
+import type { TranscriptionModel, TranscriptionModelId } from "./types";
 
 export const TRANSCRIPTION_MODELS: TranscriptionModel[] = [
 	{
 		id: "whisper-tiny",
 		name: "Tiny",
 		huggingFaceId: "onnx-community/whisper-tiny",
-		description: "Fastest, lower accuracy",
+		description: "最快，准确率较低",
 	},
 	{
 		id: "whisper-small",
 		name: "Small",
 		huggingFaceId: "onnx-community/whisper-small",
-		description: "Good balance of speed and accuracy",
+		description: "速度和准确率平衡",
 	},
 	{
 		id: "whisper-medium",
-		name: "Medium",
+		name: "中",
 		huggingFaceId: "onnx-community/whisper-medium",
-		description: "Higher accuracy, slower",
+		description: "准确率更高，速度较慢",
 	},
 	{
 		id: "whisper-large-v3-turbo",
 		name: "Large v3 Turbo",
 		huggingFaceId: "onnx-community/whisper-large-v3-turbo",
-		description: "Best accuracy, requires WebGPU for good performance",
+		description: "最佳准确率，需要 WebGPU 才能获得良好性能",
 	},
 ];
 
